@@ -1,26 +1,27 @@
-PERUBAHAN DARI VERSI SEBELUMNYA
-Backend Python dan SQLite diganti Google Apps Script.
-Google Sheets menyimpan tab Barang, Transaksi, dan Audit.
-Google Drive menyimpan foto awal dan unggahan foto baru.
-HTML dijalankan sebagai Web app Apps Script agar memakai
-komunikasi google.script.run tanpa konfigurasi CORS terpisah.
-Login kata sandi bersama diganti akses akun Google yang diizinkan.
-Email akun pencatat transaksi dan pengubah barang tercatat otomatis.
-Aplikasi tidak memerlukan komputer yang menjalankan server lokal.
-Seluruh fitur tambah/edit, unggah foto, masuk/keluar, koreksi, riwayat,
-filter, ekspor CSV, dan pengarsipan barang dipertahankan.
+FRONTEND ASLI DENGAN BACKEND GOOGLE SHEETS
 
-Tambahan Google:
-Penguncian permintaan bersamaan.
-Penyimpanan stok dan riwayat dalam batch atomik.
-Pencegahan transaksi ganda saat permintaan yang sama diulang.
-Pengambilan foto privat dari Drive melalui backend yang memeriksa akses.
-Tombol Google Sheets, folder foto, dan muat ulang.
-Ekspor JSON mencakup barang, transaksi, audit, dan ID foto.
-Batas foto 2 MB untuk mengurangi ukuran permintaan.
+Frontend kembali memakai vscode.zip. Halaman pembuka, latar gedung,
+header, kartu oranye, foto, teks berjalan, animasi, dan total stok
+dipertahankan. Tambahan UI: Barang Masuk, Barang Keluar, dan Edit Barang.
+Formulir terbuka di atas katalog yang sama.
 
-Tidak ada perubahan pada angka stok awal di arsip sumber.
-Tidak ada pembuatan sumber daya atau deployment ke akun Google pada
-saat paket kode disusun. Setup dijalankan melalui akun Google pengguna.
-12 pengujian logika menggunakan mock layanan Google lulus.
-Rincian pengujian: tests/HASIL_UJI.txt.
+Google Sheets menyimpan Barang, Transaksi, dan Audit pada database lama.
+Data yang sudah ada tidak diimpor ulang ketika frontend diperbarui.
+Stok dibaca dari backend, kemudian kartu dan total diperbarui.
+Transaksi masuk/keluar dan pencatatan stok memakai batch atomik.
+Permintaan identik yang dikirim ulang tidak menggandakan transaksi.
+Edit memeriksa versi barang sebelum menyimpan perubahan dan audit.
+
+Foto asli di frontend memakai aset website yang sama seperti sumber.
+Foto pengganti melalui Edit Barang disimpan di folder Google Drive.
+Akses backend memakai akun Google yang tercantum dalam ALLOWED_EMAILS.
+Deployment menjalankan aplikasi sebagai User accessing the web app.
+
+HTML Home menyediakan halaman pembuka. Index menyediakan katalog asli.
+Styles dan Client hanya menambahkan formulir, kontrol, dan koneksi backend.
+frontend-source menyimpan sumber tampilan; build_frontend.py menghasilkan
+HTML statis serta template Apps Script dari sumber yang sama.
+
+Pemeriksaan: 12 uji logika backend, 3 uji pelestarian frontend, dan
+uji formulir browser lokal dengan Code.gs serta database simulasi.
+Deployment diperiksa untuk membaca 22 barang dan menampilkan foto asli.

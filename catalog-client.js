@@ -1,4 +1,3 @@
-<script>
 'use strict';
 (() => {
   const appUrl = 'https://script.google.com/macros/s/AKfycbx3nGCpNcyp6uIUXtczvOi8NvoRnjYY2F9KcEVhDtDGm-ht5yFw8hAIfiQLr_mxa_P5/exec';
@@ -166,5 +165,3 @@
     } catch (_) { /* Pesan kegagalan dan tombol muat ulang tetap tersedia. */ }
   })();
 })();
-
-</script>

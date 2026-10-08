@@ -9,8 +9,13 @@ const SCHEMA = {
   Transaksi: ['id','item_id','type','quantity','before_stock','after_stock','date','person','reference','notes','created_at','actor_email','request_id','request_hash'],
   Audit: ['id','item_id','action','before_json','after_json','created_at','actor_email','request_id','request_hash']
 };
-function doGet() {
-  return HtmlService.createTemplateFromFile('Index').evaluate()
+function doGet(event) {
+  const params = event && event.parameter || {};
+  const template = HtmlService.createTemplateFromFile(params.page === 'beranda' ? 'Home' : 'Index');
+  template.appUrl = ScriptApp.getService().getUrl();
+  template.initialAction = ['masuk','keluar','edit'].includes(params.action) ? params.action : '';
+  template.initialCode = /^ARS-\d{3,}$/.test(params.code || '') ? params.code : '';
+  return template.evaluate()
     .setTitle('Arsip Persediaan | Bea Cukai Pangkalpinang')
     .addMetaTag('viewport','width=device-width, initial-scale=1');
 }

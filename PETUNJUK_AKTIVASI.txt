@@ -15,9 +15,9 @@ AKTIVASI SEKALI DI AKUN GOOGLE ANDA
    Nama proyek: Arsip Persediaan BC Pangkalpinang.
 3. Salin isi apps-script/Code.gs ke berkas Code.gs dalam proyek.
 4. Tambahkan berkas script bernama Seed. Salin isi Seed.gs.
-5. Tambahkan tiga berkas HTML dengan nama persis:
-   Index, Styles, dan Client.
-   Salin isi masing-masing Index.html, Styles.html, dan Client.html.
+5. Tambahkan empat berkas HTML dengan nama persis:
+   Home, Index, Styles, dan Client.
+   Salin isi masing-masing Home.html, Index.html, Styles.html, dan Client.html.
    Nama di editor tidak perlu ditulis dengan akhiran .html.
 6. Buka Project Settings. Aktifkan Show appsscript.json manifest file.
    Ganti isinya dengan appsscript.json dalam paket.
@@ -25,7 +25,11 @@ AKTIVASI SEKALI DI AKUN GOOGLE ANDA
    Jika belum tercantum, klik +, pilih Google Sheets API, lalu Add.
    Jika menggunakan proyek Google Cloud buatan sendiri, aktifkan
    Google Sheets API di proyek Cloud tersebut juga.
-8. Simpan proyek. Pilih fungsi setupArsip_, lalu klik Run.
+8. Simpan proyek. Fungsi berakhiran _ tidak tampil pada pilihan Run.
+   Untuk aktivasi pertama, buat helper sementara dalam berkas script:
+   function aktivasiAwal() { setupArsip_(); }
+   Pilih aktivasiAwal, lalu klik Run. Setelah berhasil, ubah namanya
+   menjadi aktivasiAwal_ agar tidak tersedia dari halaman web.
    Izinkan akses akun Google yang diminta untuk Sheets, Drive, dan email.
 9. Execution log menampilkan URL Google Sheets dan folder foto.
    Code.gs dalam repositori ini memakai sumber daya yang diberikan:
@@ -39,7 +43,12 @@ AKTIVASI SEKALI DI AKUN GOOGLE ANDA
 10. Buka folder Foto Barang yang tampil pada Execution log.
     Unggah seluruh isi folder foto-awal dari paket ini ke folder tersebut.
     Unggah berkas fotonya, bukan ZIP. Pertahankan nama berkas.
-11. Pilih fungsi sinkronFotoAwal_, lalu klik Run.
+11. Foto asli langsung ditampilkan dari aset website. Sinkronisasi Drive
+    diperlukan hanya jika ingin menyalin seluruh foto awal ke Drive.
+    Untuk menjalankannya dari editor, buat helper sementara:
+    function sinkronAwal() { sinkronFotoAwal_(); }
+    Pilih sinkronAwal, lalu klik Run. Setelah berhasil, ubah namanya
+    menjadi sinkronAwal_ agar tidak tersedia dari halaman web.
     Script menghubungkan foto dengan barang berdasarkan nama berkas.
     Fungsi ini tidak mengubah stok atau mengganti foto yang sudah diisi.
 12. Klik Deploy -> New deployment -> Web app.
@@ -77,22 +86,21 @@ Pengelola tidak perlu diberi akses editor proyek Apps Script untuk memakai
 Web app. Akses editor proyek hanya untuk pemelihara aplikasi.
 
 PEMAKAIAN
-Tambah Barang: isi identitas, saldo awal, satuan, lokasi, batas minimum,
-catatan, dan foto. Foto baru langsung tersimpan di Google Drive.
-Batas foto JPG, PNG, atau WebP adalah 2 MB.
+Tampilan katalog mengikuti vscode.zip: header, latar, kartu oranye,
+foto asli, animasi, dan total souvenir dipertahankan.
+Barang Masuk/Keluar: gunakan menu atas atau tombol pada kartu.
+Isi tanggal, jumlah, pihak terkait, referensi, dan keperluan/catatan.
 Edit Barang: ubah nama, kategori, lokasi, catatan, minimum, atau foto.
-Kode dan satuan tetap agar riwayat tidak berubah makna.
-Barang Masuk/Keluar: isi tanggal, jumlah, pihak terkait, dan referensi.
-Koreksi Stok: isi jumlah fisik akhir, petugas pemeriksa, dan alasan.
-Barang dapat diarsipkan saat stok nol. Riwayat tetap tersedia.
-Muat Ulang: ambil data terbaru jika pegawai lain baru bertransaksi.
-Riwayat: cari dan filter jenis/tanggal, lalu ekspor CSV jika dibutuhkan.
-Buka Google Sheets: buka database dengan akun Google Anda.
-Folder Foto: buka penyimpanan foto aplikasi.
-Ekspor Cadangan JSON: unduh barang, transaksi, dan audit.
-Cadangan JSON berisi ID foto, tidak memuat berkas foto Drive.
-Untuk cadangan foto, unduh folder Foto Barang melalui Google Drive.
-Versi ini belum memiliki fitur pemulihan otomatis dari cadangan JSON.
+Kode dan satuan tetap. Stok berubah melalui transaksi masuk/keluar.
+Batas foto JPG, PNG, atau WebP adalah 2 MB.
+Foto pengganti tersimpan di Google Drive; foto asli tetap tampil
+selama belum diganti melalui Edit Barang.
+Muat Ulang: ambil data terbaru dari Google Sheets.
+Transaksi tercatat pada tab Transaksi, jejak edit pada tab Audit.
+URL ?page=beranda membuka halaman pembuka asli.
+URL ?page=katalog atau /exec membuka katalog aktif.
+Halaman tengah.html pada GitHub Pages adalah pratinjau saldo awal.
+Tombolnya membuka katalog aktif dengan akun Google untuk menyimpan data.
 
 MEMPERBARUI APLIKASI
 Salin perubahan kode ke proyek yang sama.
@@ -116,14 +124,16 @@ Script tidak menghapus foto secara otomatis saat hasil penyimpanan belum
 pasti, agar foto yang telah terhubung tidak ikut terhapus.
 
 DATA AWAL
-Nama dan gambar mengikuti hasil koreksi foto pada aplikasi sebelumnya.
+Nama tampilan dan foto awal mengikuti frontend vscode.zip.
 22 jenis barang, angka stok, serta catatan awal bersumber dari HTML Anda.
 Satuan pak/lembar pada leaflet perlu dicocokkan dengan barang fisik.
 Verifikasi fisik sebelum memakai angka awal sebagai catatan operasional.
 
 PENGUJIAN YANG SUDAH DILAKUKAN
 12 pengujian logika backend menggunakan simulasi layanan Google lulus.
-Sintaks JavaScript dan struktur HTML diperiksa.
-Belum ada pengujian deployment, izin akun Google, kuota, atau browser nyata.
-Paket ini sudah memuat kode untuk konfigurasi tersebut. Google Sheets,
-folder foto, dan URL aplikasi baru terbentuk setelah langkah aktivasi.
+3 pemeriksaan regresi frontend memastikan CSS utama, foto, header,
+teks berjalan, kartu, dan halaman pembuka asli dipertahankan.
+Formulir masuk, keluar, dan edit diuji di browser lokal terhadap Code.gs
+dengan database simulasi; transaksi uji tidak masuk ke database pengguna.
+Deployment asli sudah diperbarui. Pembacaan stok dari Sheets dan foto
+asli diperiksa pada halaman web app dengan akun pemilik.

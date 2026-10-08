@@ -1,0 +1,44 @@
+<section class="catalog-status" aria-live="polite" id="catalog-status">
+  <span id="connection-status">Memuat stok…</span>
+  <button id="reload-stock" type="button">Muat Ulang</button>
+  <a id="open-live" hidden>Masuk akun Google</a>
+</section>
+<dialog class="catalog-dialog" id="movement-dialog">
+  <form id="movement-form">
+    <h2 id="movement-title">Barang Masuk</h2>
+    <label>Barang<select name="item_id" required></select></label>
+    <p class="form-hint" id="movement-stock"></p>
+    <div class="form-grid">
+      <label>Tanggal<input type="date" name="date" required></label>
+      <label id="quantity-label">Jumlah<input type="number" name="quantity" min="1" max="1000000000" step="1" required></label>
+    </div>
+    <label><span id="person-label">Pemasok / penyerah</span><input name="person" maxlength="250" required></label>
+    <label>Nomor referensi<input name="reference" maxlength="250"></label>
+    <label>Keperluan / catatan<textarea name="notes" rows="3" maxlength="2000"></textarea></label>
+    <p class="form-error" role="alert"></p>
+    <div class="dialog-buttons"><button type="button" data-close>Batal</button><button class="primary" type="submit">Simpan Transaksi</button></div>
+  </form>
+</dialog>
+<dialog class="catalog-dialog" id="edit-dialog">
+  <form id="edit-form">
+    <h2>Edit Barang</h2>
+    <label>Barang<select name="item_id" required></select></label>
+    <div class="form-grid">
+      <label>Kode barang<input name="code" readonly></label>
+      <label>Satuan<input name="unit" readonly></label>
+    </div>
+    <label>Nama barang<input name="name" required maxlength="250"></label>
+    <label>Kategori<input name="category" required maxlength="250"></label>
+    <div class="form-grid">
+      <label>Lokasi penyimpanan<input name="location" maxlength="250"></label>
+      <label>Batas stok minimum<input name="min_stock" type="number" min="0" max="1000000000" step="1" required></label>
+    </div>
+    <label>Catatan<textarea name="notes" rows="3" maxlength="2000"></textarea></label>
+    <label>Ganti foto (JPG, PNG, WebP, maksimal 2 MB)<input id="edit-photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+    <img id="edit-photo-preview" alt="Pratinjau foto barang" hidden>
+    <p class="form-hint">Ubah stok melalui Barang Masuk atau Barang Keluar.</p>
+    <p class="form-error" role="alert"></p>
+    <div class="dialog-buttons"><button type="button" data-close>Batal</button><button class="primary" type="submit">Simpan Perubahan</button></div>
+  </form>
+</dialog>
+<div class="catalog-toast" id="catalog-toast" role="status" hidden></div>
