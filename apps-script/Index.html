@@ -968,7 +968,7 @@ footer {
 </head>
 
 
-<body data-initial-action="<?= initialAction ?>" data-initial-code="<?= initialCode ?>">
+<body>
 
 
     <!-- =========================
@@ -977,12 +977,12 @@ footer {
 
     <nav class="navbar">
 
-        <div class="nav-left"><button type="button" class="catalog-menu" data-action="masuk">Barang Masuk</button><button type="button" class="catalog-menu" data-action="keluar">Barang Keluar</button><button type="button" class="catalog-menu" data-action="edit">Edit Barang</button>
+        <div class="nav-left"><button type="button" class="catalog-menu" data-action="add">+ Tambah Barang</button><button type="button" class="catalog-menu" data-action="masuk">Barang Masuk</button><button type="button" class="catalog-menu" data-action="keluar">Barang Keluar</button><button type="button" class="catalog-menu" data-action="edit">Edit Barang</button>
 
             <!-- KEMBALI KE INDEX -->
 
-            <a href="<?= appUrl ?>?page=beranda" class="active">
-               Arsip sovenir
+            <a href="https://webbcpapin.github.io/souvenir/index.html" class="active">
+               Arsip Suvenir
             </a>
 
         </div>
@@ -1017,7 +1017,7 @@ footer {
         <div class="header-text">
 
             <h1>
-                Arsip Sovenir
+                Arsip Suvenir
             </h1>
 
             <h3>
@@ -1065,535 +1065,17 @@ footer {
     ========================= -->
 
     <section class="catalog-status" aria-live="polite" id="catalog-status">
-  <span id="connection-status">Memuat stok…</span>
+  <span id="connection-status">Hubungkan akun Google untuk memuat stok terkini.</span>
+  <button id="connect-google" type="button">Hubungkan Google</button>
   <button id="reload-stock" type="button">Muat Ulang</button>
-  <a id="open-live" hidden>Masuk akun Google</a>
 </section>
-<main class="menu-container" id="catalog-grid">
-
-
-        <!-- MENU 1 -->
-
-        <article data-code="ARS-001" data-seed-name="Topi" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2>   <span class="angka">10</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
- <img src="https://webbcpapin.github.io/souvenir/WhatsApp_Image_2026-10-08_at_08.26.33-removebg-preview.png"
-
-             alt="Topi"
-             class="menu-image">
-              <h2>  Topi </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 2 -->
-
-        <article data-code="ARS-002" data-seed-name="Tas Pinggang Gempur" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-                <h1> <span class="angka">3</span>  </h1>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/ChatGPT%20Image%208%20Okt%202026%2C%2013.20.35.png"
-
-             alt="Topi"
-             class="menu-image">
-              <h2>  Tas Gempur </h2>
-                <br>
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 3 -->
-
-        <article data-code="ARS-003" data-seed-name="Flyer Pendaftaran IMEI" class="menu-card  orange">
-<div class="shine"></div>
-            <div class="">
-
-              <h2> <span class="angka">24</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/flyerimei.png"
-
-             alt="flayer"
-             class="menu-image">
-              <h2>  Flayer Imei </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 4 -->
-
-        <article data-code="ARS-004" data-seed-name="Flyer Barang Impor Bawaan Penumpang" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-              <h2>  <span class="angka">25</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/pnumpang.png"
-
-             alt="flayer"
-             class="menu-image">
-             <h2>   Flayer Penumpang  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 5 -->
-
-        <article data-code="ARS-005" data-seed-name="Flyer Fasilitas Barang Keperluan Hadiah, Amal, Sosial, Kebudayaan, atau Bencana Alam" class="menu-card  orange">
- <div class="shine"></div>
-            <div class="">
-
-                <h2>  <span class="angka">21</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/keperluan.png"
-
-             alt="flayer"
-             class="menu-image">
-              <h2>  Flayer Keperluan Ibadah  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 6 -->
-
-        <article data-code="ARS-006" data-seed-name="Flyer Fasilitas Pertahanan dan Keamanan Negara" class="menu-card orange">
-<div class="shine"></div>
-            <div class="">
-
-               <h2>  <span class="angka">29</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/pertahanan.png"
-
-             alt="flayer"
-             class="menu-image">
-               <h3> Flayer Prtahanan & Keamanan Negara </h3>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-
-        <!-- MENU 7 -->
-
-        <article data-code="ARS-007" data-seed-name="Buku Catatan Spiral Bea Cukai Pangkalpinang" class="menu-card  orange">
- <div class="shine"></div>
-            <div class="">
-
-             <h2>  <span class="angka">4</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/notebook.png"
-
-             alt="notebook"
-             class="menu-image">
-             <h2>   Notebook </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-        <!-- MENU 8 -->
-
-        <article data-code="ARS-008" data-seed-name="Gelas Mug" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-             <h2>  <span class="angka">4</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-
-                <img src="https://webbcpapin.github.io/souvenir/glelas.png"
-
-             alt="gelas"
-             class="menu-image">
-  <h2> Gelas  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-        <!-- MENU 9 -->
-
-        <article data-code="ARS-009" data-seed-name="Buku Informasi dan Identifikasi Pita Cukai Desain Tahun 2024" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-                 <h2> <span class="angka">1</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/pita%20cukai.jpeg"
-
-             alt="notebook pita cukai"
-             class="menu-image">
-                  <h2> Notebook Pita Cukai </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-
-        <!-- MENU 10 -->
-
-        <article data-code="ARS-010" data-seed-name="Tas Jinjing Biru" class="menu-card orange">
-<div class="shine"></div>
-            <div class="">
-
-               <h2> <span class="angka">59</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/totebag.png"
-
-             alt="totebag"
-             class="menu-image">
-             <h2>  Totebag biru  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 11 -->
-
-        <article data-code="ARS-011" data-seed-name="Payung" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-                <h2> <span class="angka">7</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/payung.png"
-
-             alt="notebook"
-             class="menu-image">
-               <h2>  Payung  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 12 -->
-
-        <article data-code="ARS-012" data-seed-name="Masker Kain Bea Cukai" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2> <span class="angka">3</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/masker.png"
-
-             alt="masker"
-             class="menu-image">
-            <h2> Masker </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 13 -->
-
-        <article data-code="ARS-013" data-seed-name="Kaos Hitam Gempur" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-        <h2>    <span class="angka">1</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/baju.png"
-
-             alt="baju"
-             class="menu-image">
-            <h2>  Baju Kaos Hitam </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 14 -->
-
-        <article data-code="ARS-014" data-seed-name="Pin BC Papin" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-              <h2>  <span class="angka">3</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-                <img src="https://webbcpapin.github.io/souvenir/pin.png"
-
-             alt="pin"
-             class="menu-image">
-    <h2> Pin </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 15 -->
-
-        <article data-code="ARS-015" data-seed-name="Jam Meja" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-            <h2>  <span class="angka">1</span>  </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/jam.png"
-
-             alt="jam"
-             class="menu-image">
-              <h2> Jam </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 16 -->
-
-        <article data-code="ARS-016" data-seed-name="Buku/Modul Bea Cukai" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-             <h2>  <span class="angka">9</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/modul.png"
-
-             alt="modul"
-             class="menu-image">
-               <h2> Buku/Modul</h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 17 -->
-
-        <article data-code="ARS-017" data-seed-name="Leaflet PCHT (Kemasan Pak)" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-             <h2> <span class="angka">50</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/leaflet4.png"
-
-             alt="leaflet1"
-             class="menu-image">
-               <h2> Leaflet PCHT-oplah </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 18 -->
-
-        <article data-code="ARS-018" data-seed-name="Leaflet PCHPTL dan PCREL (Kemasan Pak)" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2> <span class="angka">25</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/leaflet2.png"
-
-             alt="leaflet2"
-             class="menu-image">
-            <h3>   Leaflet PCHPTL-PCREL oplah </h3>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 19 -->
-
-        <article data-code="ARS-019" data-seed-name="Leaflet PCMMEA (Kemasan Pak)" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-              </h2>  <span class="angka">50</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/leaflet4.png"
-
-             alt="leaflet1"
-             class="menu-image">
-               <h2> Leaflet PCMMEA-oplah </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 20 -->
-
-        <article data-code="ARS-020" data-seed-name="Leaflet PCHPTL dan PCREL (Lepasan)" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2> <span class="angka">49</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/leaflet3.png"
-
-             alt="leaflet3"
-             class="menu-image">
-              <h3> Leaflet PCHPTL & PCREL </h3>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-         <!-- MENU 21 -->
-
-        <article data-code="ARS-021" data-seed-name="Kartu Nama" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2>  <span class="angka">1</span> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/kartunama.png"
-
-             alt="kartunama"
-             class="menu-image">
-             <h2>  Kartu Nama  </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
- <!-- MENU 22 -->
-
-        <article data-code="ARS-022" data-seed-name="Plakat Penghargaan" class="menu-card orange">
- <div class="shine"></div>
-            <div class="">
-
-               <h2> <i class="angka">5</i> </h2>
-
-            </div>
-
-            <div class="menu-title">
-<img src="https://webbcpapin.github.io/souvenir/penghargaan.png"
-
-             alt="Penghargaan"
-             class="menu-image">
-              <h2> Piala Penghargaan </h2>
-                <br>
-
-
-            </div>
-
-        <div class="card-actions"><button type="button" data-action="masuk">+ Masuk</button><button type="button" data-action="keluar">− Keluar</button><button type="button" data-action="edit">Edit</button></div></article>
-
-    </main>
+<section class="catalog-views" aria-label="Tampilan katalog">
+  <button type="button" data-view="active" aria-pressed="true">Barang Aktif</button>
+  <button type="button" data-view="inactive" aria-pressed="false">Barang Nonaktif</button>
+  <button type="button" data-view="history" aria-pressed="false">Riwayat Transaksi</button>
+  <p id="unit-summary"></p>
+</section>
+<main class="menu-container" id="catalog-grid" aria-label="Katalog barang"></main>
 
     <!-- TOTAL SOUVENIR -->
 
@@ -1602,12 +1084,12 @@ footer {
     <div class="total-box">
 
         <div class="total-info">
-            <h2>Total Souvenir</h2>
-            <p>Jumlah seluruh stok souvenir yang tersedia</p>
+            <h2>Jenis Barang Aktif</h2>
+            <p>Jumlah jenis barang; stok ditampilkan menurut satuan</p>
         </div>
 
         <div class="total-number" id="totalSouvenir">
-            0
+            —
         </div>
 
     </div>
@@ -1636,7 +1118,7 @@ footer {
     <p class="form-hint" id="movement-stock"></p>
     <div class="form-grid">
       <label>Tanggal<input type="date" name="date" required></label>
-      <label id="quantity-label">Jumlah<input type="number" name="quantity" min="1" max="1000000000" step="1" required></label>
+      <label>Jumlah<input type="number" name="quantity" min="1" max="1000000000" step="1" required></label>
     </div>
     <label><span id="person-label">Pemasok / penyerah</span><input name="person" maxlength="250" required></label>
     <label>Nomor referensi<input name="reference" maxlength="250"></label>
@@ -1661,14 +1143,45 @@ footer {
     </div>
     <label>Catatan<textarea name="notes" rows="3" maxlength="2000"></textarea></label>
     <label>Ganti foto (JPG, PNG, WebP, maksimal 2 MB)<input id="edit-photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
-    <img id="edit-photo-preview" alt="Pratinjau foto barang" hidden>
+    <img id="edit-photo-preview" class="photo-preview" alt="Pratinjau foto barang" hidden>
     <p class="form-hint">Ubah stok melalui Barang Masuk atau Barang Keluar.</p>
     <p class="form-error" role="alert"></p>
     <div class="dialog-buttons"><button type="button" data-close>Batal</button><button class="primary" type="submit">Simpan Perubahan</button></div>
   </form>
 </dialog>
+<dialog class="catalog-dialog" id="add-dialog">
+  <form id="add-form">
+    <h2>Tambah Barang</h2>
+    <div class="form-grid">
+      <label>Kode unik<input name="code" required maxlength="250" pattern="[A-Za-z0-9][A-Za-z0-9_-]*"></label>
+      <label>Satuan<input name="unit" required maxlength="250" placeholder="Sesuai satuan barang"></label>
+    </div>
+    <label>Nama barang<input name="name" required maxlength="250"></label>
+    <label>Kategori<input name="category" required maxlength="250"></label>
+    <div class="form-grid">
+      <label>Saldo awal<input name="stock" type="number" min="0" max="1000000000" step="1" value="0" required></label>
+      <label>Batas stok minimum<input name="min_stock" type="number" min="0" max="1000000000" step="1" value="0" required></label>
+    </div>
+    <label>Lokasi penyimpanan<input name="location" maxlength="250"></label>
+    <label>Catatan<textarea name="notes" rows="3" maxlength="2000"></textarea></label>
+    <label>Foto (JPG, PNG, WebP, maksimal 2 MB)<input id="add-photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+    <img id="add-photo-preview" class="photo-preview" alt="Pratinjau foto barang baru" hidden>
+    <p class="form-error" role="alert"></p>
+    <div class="dialog-buttons"><button type="button" data-close>Batal</button><button class="primary" type="submit">Simpan Barang</button></div>
+  </form>
+</dialog>
+<dialog class="catalog-dialog" id="delete-dialog">
+  <form id="delete-form">
+    <h2 id="delete-title">Hapus Barang</h2>
+    <p id="delete-summary"></p>
+    <p class="form-hint" id="delete-hint">Barang menjadi nonaktif. Riwayat dan foto tetap tersimpan. Penghapusan hanya diizinkan jika stok nol.</p>
+    <p class="form-error" role="alert"></p>
+    <div class="dialog-buttons"><button type="button" data-close>Batal</button><button class="primary" type="submit">Hapus Barang</button></div>
+  </form>
+</dialog>
 <div class="catalog-toast" id="catalog-toast" role="status" hidden></div>
 
+<script id="photo-fallbacks" type="application/json">{"ARS-001": "https://webbcpapin.github.io/souvenir/foto-awal/topi.png", "ARS-002": "https://webbcpapin.github.io/souvenir/foto-awal/tas-pinggang-gempur.png", "ARS-003": "https://webbcpapin.github.io/souvenir/foto-awal/flyerimei.png", "ARS-004": "https://webbcpapin.github.io/souvenir/foto-awal/penumpang.png", "ARS-005": "https://webbcpapin.github.io/souvenir/foto-awal/keperluan.png", "ARS-006": "https://webbcpapin.github.io/souvenir/foto-awal/pertahanan.png", "ARS-007": "https://webbcpapin.github.io/souvenir/foto-awal/notebook.png", "ARS-008": "https://webbcpapin.github.io/souvenir/foto-awal/gelas.png", "ARS-009": "https://webbcpapin.github.io/souvenir/foto-awal/pita-cukai.jpeg", "ARS-010": "https://webbcpapin.github.io/souvenir/foto-awal/totebag.png", "ARS-011": "https://webbcpapin.github.io/souvenir/foto-awal/payung.png", "ARS-012": "https://webbcpapin.github.io/souvenir/foto-awal/masker.png", "ARS-013": "https://webbcpapin.github.io/souvenir/foto-awal/baju.png", "ARS-014": "https://webbcpapin.github.io/souvenir/foto-awal/pin.png", "ARS-015": "https://webbcpapin.github.io/souvenir/foto-awal/jam.png", "ARS-016": "https://webbcpapin.github.io/souvenir/foto-awal/modul.png", "ARS-017": "https://webbcpapin.github.io/souvenir/foto-awal/leaflet4.png", "ARS-018": "https://webbcpapin.github.io/souvenir/foto-awal/leaflet2.png", "ARS-019": "https://webbcpapin.github.io/souvenir/foto-awal/leaflet1.png", "ARS-020": "https://webbcpapin.github.io/souvenir/foto-awal/leaflet3.png", "ARS-021": "https://webbcpapin.github.io/souvenir/foto-awal/kartunama.png", "ARS-022": "https://webbcpapin.github.io/souvenir/foto-awal/penghargaan.png"}</script>
 <?!= include_('Client'); ?>
 </body>
 

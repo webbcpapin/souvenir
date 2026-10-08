@@ -11,6 +11,11 @@ const SCHEMA = {
 };
 function doGet(event) {
   const params = event && event.parameter || {};
+  if (params.page === 'bridge') {
+    const bridge = HtmlService.createTemplateFromFile('Bridge');
+    bridge.bridgeChannel = /^[a-f0-9-]{36}$/.test(params.channel || '') ? params.channel : '';
+    return bridge.evaluate().setTitle('Koneksi Arsip Suvenir').addMetaTag('viewport','width=device-width, initial-scale=1');
+  }
   const template = HtmlService.createTemplateFromFile(params.page === 'beranda' ? 'Home' : 'Index');
   template.appUrl = ScriptApp.getService().getUrl();
   template.initialAction = ['masuk','keluar','edit'].includes(params.action) ? params.action : '';
@@ -137,6 +142,7 @@ function api(action,body) {
     if(duplicate_([transactionTable,auditTable],req))return {ok:true,duplicate:true};
     if(action==='addItem'){
       const item={id:nextId_(itemTable.rows),code:str_(body,'code',true).toUpperCase(),name:str_(body,'name',true),category:str_(body,'category',true),unit:str_(body,'unit',true),stock:num_(body,'stock'),min_stock:num_(body,'min_stock'),location:str_(body,'location'),notes:str_(body,'notes',false,2000),image:'',active:1,version:1,updated_at:time_(),seed_filename:''};
+      if(!/^[A-Z0-9][A-Z0-9_-]*$/.test(item.code))throw new Error('Kode hanya boleh memuat huruf, angka, tanda hubung, atau garis bawah.');
       if(itemTable.rows.some(i=>String(i.code).toUpperCase()===item.code))throw new Error('Kode barang sudah digunakan.');
       const image=savePhoto_(body);item.image=image.id;
       const initial={id:nextId_(transactionTable.rows),item_id:item.id,type:'awal',quantity:item.stock,before_stock:0,after_stock:item.stock,date:today_(),person:actor,reference:'',notes:'Saldo awal barang baru.',created_at:time_(),actor_email:actor,request_id:req.id,request_hash:req.hash};
@@ -146,6 +152,15 @@ function api(action,body) {
     const id=num_(body,'item_id');
     const old=itemTable.rows.find(i=>Number(i.id)===id);
     if(!old)throw new Error('Barang tidak ditemukan.');
+    if(action==='deleteItem'||action==='restoreItem'){
+      if(body.version!==Number(old.version))throw new Error('Data sudah berubah. Muat ulang sebelum melanjutkan.');
+      const active=action==='restoreItem'?1:0;
+      if(Number(old.active)===active)throw new Error('Status barang sudah berubah. Muat ulang.');
+      if(!active&&Number(old.stock)!==0)throw new Error('Stok harus nol sebelum barang dihapus. Catat barang keluar secara terpisah.');
+      const item=Object.assign({},old,{active,version:Number(old.version)+1,updated_at:time_()});
+      commit_(book,[update_(itemTable,'Barang',item),append_(auditTable,'Audit',audit_(auditTable,item,active?'restore':'delete',publicRow_(old),item,actor,req))]);
+      return {ok:true};
+    }
     if(action==='editItem'){
       if(body.version!==Number(old.version))throw new Error('Data sudah berubah. Muat ulang sebelum mengedit.');
       const item=Object.assign({},old,{name:str_(body,'name',true),category:str_(body,'category',true),location:str_(body,'location'),notes:str_(body,'notes',false,2000),min_stock:num_(body,'min_stock'),version:Number(old.version)+1,updated_at:time_()});
@@ -159,6 +174,7 @@ function api(action,body) {
     }
     if(action==='movement'){
       if(!Number(old.active))throw new Error('Pilih barang aktif.');
+      if(body.version!==undefined&&body.version!==Number(old.version))throw new Error('Stok sudah berubah. Muat ulang sebelum mencatat transaksi.');
       const type=str_(body,'type',true);let qty=num_(body,'quantity');const before=Number(old.stock);let after;
       if(type==='masuk'||type==='keluar'){
         if(qty===0)throw new Error('Jumlah harus lebih dari nol.');

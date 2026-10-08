@@ -1,167 +1,159 @@
-'use strict';
 (() => {
-  const appUrl = 'https://script.google.com/macros/s/AKfycbx3nGCpNcyp6uIUXtczvOi8NvoRnjYY2F9KcEVhDtDGm-ht5yFw8hAIfiQLr_mxa_P5/exec';
-  const live = typeof google !== 'undefined' && Boolean(google.script && google.script.run);
-  const byId = id => document.getElementById(id);
-  const cards = [...document.querySelectorAll('.menu-card[data-code]')];
-  const metadata = new Map(cards.map(card => [card.dataset.code, {
-    originalName: card.querySelector('.menu-title h2, .menu-title h3').textContent.trim(),
-    seedName: card.dataset.seedName,
-    originalPhoto: card.querySelector('img').getAttribute('src')
-  }]));
-  let items = [], saving = false, photoData = null, totalFrame = null, toastTimer = null;
-  const photoCache = new Map();
-  const activeItems = () => items.filter(item => Number(item.active));
-  const displayName = item => item.name === metadata.get(item.code)?.seedName ? metadata.get(item.code).originalName : item.name;
-  const requestId = () => crypto.randomUUID();
-  const rpc = (action, body = {}) => new Promise((resolve, reject) => google.script.run
-    .withSuccessHandler(resolve).withFailureHandler(error => reject(new Error(error.message || String(error)))).api(action, body));
-  const getPhoto = id => new Promise((resolve, reject) => google.script.run
-    .withSuccessHandler(resolve).withFailureHandler(reject).getPhoto(id));
-  function status(message, error = false) {
-    byId('connection-status').textContent = message;
-    byId('catalog-status').classList.toggle('error', error);
+  'use strict';
+  const backend = window.SouvenirBackend;
+  const $ = id => document.getElementById(id);
+  const grid = $('catalog-grid'), connection = $('connection-status');
+  const fallbacks = JSON.parse($('photo-fallbacks').textContent);
+  const photos = new Map(), formStates = new WeakMap();
+  let data = null, stale = true, view = 'active', busy = false, generation = 0, toastTimer;
+  const element = (tag,cls,text) => { const node = document.createElement(tag); if(cls)node.className=cls; if(text!==undefined)node.textContent=text; return node; };
+  const active = item => Number(item.active) === 1;
+  function status(text,error=false) { connection.textContent=text; $('catalog-status').classList.toggle('error',error); }
+  function notify(text) { $('catalog-toast').textContent=text; $('catalog-toast').hidden=false; clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('catalog-toast').hidden=true,6000); }
+  function controls() {
+    document.querySelectorAll('[data-action]').forEach(button=>button.disabled=busy||!data||stale);
+    $('reload-stock').disabled=busy; $('connect-google').disabled=busy;
+    document.querySelectorAll('[data-view]').forEach(button=>{button.disabled=busy;button.setAttribute('aria-pressed',String(button.dataset.view===view));});
   }
-  function toast(message) {
-    byId('catalog-toast').textContent = message; byId('catalog-toast').hidden = false;
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => { byId('catalog-toast').hidden = true; }, 4500);
-  }
-  function animateTotal() {
-    cancelAnimationFrame(totalFrame);
-    const total = [...document.querySelectorAll('.menu-card:not([hidden]) .angka')].reduce((sum, el) => sum + (Number(el.textContent) || 0), 0);
-    const start = performance.now();
-    const tick = time => {
-      const progress = Math.min((time - start) / 1800, 1);
-      byId('totalSouvenir').textContent = Math.floor(total * (1 - Math.pow(1 - progress, 3))).toLocaleString('id-ID');
-      if (progress < 1) totalFrame = requestAnimationFrame(tick);
-    };
-    totalFrame = requestAnimationFrame(tick);
-  }
-  async function setPhoto(card, item) {
-    const image = card.querySelector('.menu-image');
-    image.alt = displayName(item);
-    if (!item.image) { image.src = metadata.get(item.code)?.originalPhoto || ''; image.hidden = !image.getAttribute('src'); return; }
+  function fallback(item) { return fallbacks[item.code] || ''; }
+  async function photo(item,img,epoch) {
+    const src = fallback(item);
+    if(src)img.src=src; else {img.hidden=true; img.parentElement.append(element('p','photo-empty','Belum ada foto'));}
+    if(!item.image)return;
     try {
-      if (!photoCache.has(item.image)) photoCache.set(item.image, getPhoto(item.image));
-      const data = await photoCache.get(item.image);
-      if (card.dataset.photoId === item.image) { image.src = data; image.hidden = false; }
-    } catch (_) { photoCache.delete(item.image); /* Foto asli tetap tampil jika foto baru belum dapat dibaca. */ }
+      if(!photos.has(item.image))photos.set(item.image,backend.getPhoto(item.image).catch(error=>{photos.delete(item.image);throw error;}));
+      const image = await photos.get(item.image);
+      if(epoch!==generation||!img.isConnected)return;
+      img.src=image;img.hidden=false;img.parentElement.querySelector('.photo-empty')?.remove();
+    } catch { if(epoch===generation&&img.isConnected)img.parentElement.append(element('p','photo-warning','Foto Drive belum dapat dimuat.')); }
   }
-  function updateCards() {
-    for (const card of cards) {
-      const item = items.find(row => row.code === card.dataset.code);
-      card.hidden = !item || !Number(item.active);
-      if (!item) continue;
-      card.querySelector('.angka').textContent = item.stock;
-      card.querySelector('.menu-title h2, .menu-title h3').textContent = displayName(item);
-      card.dataset.photoId = item.image || '';
-      for (const button of card.querySelectorAll('[data-action]')) button.disabled = saving || (button.dataset.action === 'keluar' && Number(item.stock) === 0);
-      void setPhoto(card, item);
+  function render() {
+    generation++; grid.replaceChildren(); controls();
+    if(!data||stale) {grid.append(element('p','catalog-empty','Stok terkini belum tersedia. Hubungkan Google atau muat ulang.'));$('totalSouvenir').textContent='—';$('unit-summary').textContent='';return;}
+    const current=data.items.filter(active), units=new Map();
+    current.forEach(item=>units.set(item.unit,(units.get(item.unit)||0)+Number(item.stock)));
+    $('totalSouvenir').textContent=String(current.length);
+    $('unit-summary').textContent=Array.from(units,([unit,count])=>count.toLocaleString('id-ID')+' '+unit).join(' · ');
+    if(view==='history') {
+      grid.classList.add('history-view');
+      const list=element('div','history-list');
+      for(const move of data.movements) {
+        const entry=element('article','history-entry');
+        entry.append(element('h3','',move.name||('Barang #'+move.item_id)),element('p','',move.code+' · '+move.date+' · '+move.type),element('p','',move.quantity+' '+move.unit+' · '+move.before_stock+' → '+move.after_stock+' '+move.unit),element('p','',move.person+(move.notes?' · '+move.notes:'')));
+        list.append(entry);
+      }
+      grid.append(list);if(!data.movements.length)list.append(element('p','','Belum ada transaksi.')); return;
     }
-    animateTotal();
+    grid.classList.remove('history-view');
+    const rows=data.items.filter(item=>view==='active'?active(item):!active(item));
+    for(const item of rows) {
+      const card=element('article','menu-card orange');card.dataset.code=item.code;card.dataset.id=item.id;
+      card.append(element('div','shine'));
+      const quantity=element('h2','stock-line');quantity.append(element('span','angka',Number(item.stock).toLocaleString('id-ID')),element('small','stock-unit',' '+item.unit));card.append(quantity);
+      const title=element('div','menu-title'),img=element('img','menu-image');img.alt=item.name;
+      title.append(img,element('h2','',item.name),element('p','item-code',item.code));card.append(title);
+      const actions=element('div','card-actions');
+      for(const [action,label] of (active(item)?[['masuk','+ Masuk'],['keluar','− Keluar'],['edit','Edit'],['delete','Hapus']]:[['restore','Aktifkan Kembali']])) {
+        const button=element('button','',label);button.type='button';button.dataset.action=action;button.dataset.id=item.id;actions.append(button);
+      }
+      card.append(actions);grid.append(card);photo(item,img,generation);
+    }
+    if(!rows.length)grid.append(element('p','catalog-empty',view==='active'?'Belum ada barang aktif.':'Tidak ada barang nonaktif.'));
+    controls();
   }
   async function reload() {
-    status('Memuat stok…'); byId('reload-stock').disabled = true;
-    try {
-      const state = await rpc('state'); items = state.items;
-      updateCards(); status('Stok tersimpan · ' + state.email);
-      for (const button of document.querySelectorAll('.catalog-menu')) button.disabled = activeItems().length === 0;
-    } catch (error) {
-      status(error.message, true);
-      for (const button of document.querySelectorAll('[data-action]')) button.disabled = true;
-      if (!items.length) { cancelAnimationFrame(totalFrame); for (const card of cards) card.querySelector('.angka').textContent = '—'; byId('totalSouvenir').textContent = '—'; }
-      throw error;
-    } finally { byId('reload-stock').disabled = false; }
+    if(busy)return;busy=true;stale=true;status('Memuat stok dari Google Sheets…');render();
+    try {data=await backend.api('state');if(!Array.isArray(data.items)||!Array.isArray(data.movements))throw new Error('Format data backend tidak valid.');stale=false;status('Terhubung sebagai '+data.email+' · Stok terkini dari Google Sheets.');}
+    catch(error){status(error.message,true);}
+    finally{busy=false;render();}
   }
-  function fillChoices(select, code) {
-    select.replaceChildren(...activeItems().map(item => { const option = document.createElement('option'); option.value = item.id; option.textContent = displayName(item); return option; }));
-    const item = activeItems().find(row => row.code === code) || activeItems()[0];
-    if (item) select.value = item.id;
+  function field(form,name){return form.elements.namedItem(name);}
+  function find(id){return data.items.find(item=>Number(item.id)===Number(id));}
+  function choices(form,id){
+    const select=field(form,'item_id');select.replaceChildren();
+    for(const item of data.items.filter(active)){const option=element('option','',item.code+' · '+item.name);option.value=item.id;select.append(option);}
+    if(id)select.value=id;
   }
-  function selected(form) { return items.find(item => Number(item.id) === Number(form.elements.item_id.value)); }
-  function localDate() {
-    const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  function reset(form) {
+    form.reset();form.querySelector('.form-error').textContent='';
+    for(const input of form.querySelectorAll('input,select,textarea,button'))input.disabled=false;
+    const preview=form.querySelector('.photo-preview');if(preview){preview.hidden=true;preview.removeAttribute('src');}
+    const state={request_id:crypto.randomUUID(),image:undefined,photoPending:false,photoError:'',pending:null,photoSeq:0};formStates.set(form,state);return state;
   }
-  function movementSelection() {
-    const form = byId('movement-form'), item = selected(form); if (!item) return;
-    byId('movement-stock').textContent = `Stok saat ini: ${item.stock} ${item.unit}.`;
-    form.elements.quantity.max = form.dataset.kind === 'keluar' ? item.stock : 1000000000;
-    form.dataset.requestId = requestId(); form.querySelector('.form-error').textContent = '';
+  function selectedEdit(){
+    const form=$('edit-form'),state=formStates.get(form),item=find(field(form,'item_id').value);if(!item)return;
+    state.version=Number(item.version);state.item_id=Number(item.id);state.image=undefined;state.photoError='';state.photoSeq++;state.photoPending=false;
+    for(const name of ['code','unit','name','category','location','min_stock','notes'])field(form,name).value=item[name]??'';
+    $('edit-photo').value='';const preview=$('edit-photo-preview');preview.hidden=true;preview.removeAttribute('src');
+    const epoch=state.photoSeq;
+    (item.image?backend.getPhoto(item.image):Promise.resolve(fallback(item))).then(src=>{if(formStates.get(form)===state&&state.photoSeq===epoch&&src){preview.src=src;preview.hidden=false;}}).catch(()=>{});
   }
-  function editSelection() {
-    const form = byId('edit-form'), item = selected(form); if (!item) return;
-    for (const key of ['code','unit','category','location','min_stock','notes']) form.elements[key].value = item[key] ?? '';
-    form.elements.name.value = displayName(item); form.dataset.version = item.version; form.dataset.requestId = requestId();
-    form.querySelector('.form-error').textContent = ''; photoData = null; byId('edit-photo').value = ''; byId('edit-photo-preview').hidden = true;
-  }
-  function openOperation(kind, code = '') {
-    if (!live) { const url = new URL(appUrl); url.searchParams.set('page','katalog'); url.searchParams.set('action',kind); if (code) url.searchParams.set('code',code); window.location.assign(url.href); return; }
-    if (saving) { toast('Tunggu penyimpanan selesai.'); return; }
-    if (!activeItems().length) { toast('Muat data barang terlebih dahulu.'); return; }
-    const editing = kind === 'edit', form = byId(editing ? 'edit-form' : 'movement-form');
-    form.reset(); fillChoices(form.elements.item_id, code);
-    if (editing) editSelection();
-    else {
-      form.dataset.kind = kind; form.elements.date.value = localDate(); form.elements.date.max = localDate();
-      byId('movement-title').textContent = kind === 'keluar' ? 'Barang Keluar' : 'Barang Masuk';
-      byId('person-label').textContent = kind === 'keluar' ? 'Penerima / penanggung jawab' : 'Pemasok / penyerah';
-      movementSelection();
+  function movementStock(){const form=$('movement-form'),item=find(field(form,'item_id').value);if(!item)return;const state=formStates.get(form);state.item_id=Number(item.id);state.version=Number(item.version);$('movement-stock').textContent='Stok terkini: '+item.stock+' '+item.unit;field(form,'quantity').max=state.type==='keluar'?Number(item.stock):1000000000;}
+  function openOperation(action,id) {
+    if(busy||!data||stale){notify('Hubungkan Google dan muat stok terkini terlebih dahulu.');return;}
+    if(action==='add'){const form=$('add-form');reset(form);$('add-dialog').showModal();return;}
+    if(action==='edit') {const form=$('edit-form');reset(form);choices(form,id);if(!field(form,'item_id').value){notify('Tidak ada barang aktif.');return;}selectedEdit();$('edit-dialog').showModal();return;}
+    if(action==='masuk'||action==='keluar') {
+      const form=$('movement-form'),state=reset(form);state.type=action;choices(form,id);if(!field(form,'item_id').value){notify('Tidak ada barang aktif.');return;}
+      $('movement-title').textContent=action==='masuk'?'Barang Masuk':'Barang Keluar';$('person-label').textContent=action==='masuk'?'Pemasok / penyerah':'Penerima';
+      const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});field(form,'date').value=today;field(form,'date').max=today;movementStock();$('movement-dialog').showModal();return;
     }
-    byId(editing ? 'edit-dialog' : 'movement-dialog').showModal();
+    const item=find(id);if(!item)return;
+    const form=$('delete-form'),state=reset(form);state.item_id=Number(item.id);state.version=Number(item.version);state.action=action==='restore'?'restoreItem':'deleteItem';
+    $('delete-title').textContent=action==='restore'?'Aktifkan Barang':'Hapus Barang';
+    $('delete-summary').textContent=item.name+' · '+item.code+' · Stok '+item.stock+' '+item.unit;
+    $('delete-hint').textContent=action==='restore'?'Barang akan tampil kembali pada katalog aktif. Riwayat dan foto tetap tersimpan.':'Barang menjadi nonaktif. Riwayat dan foto tetap tersimpan. Penghapusan hanya diizinkan jika stok nol.';
+    form.querySelector('[type="submit"]').textContent=action==='restore'?'Aktifkan Kembali':'Hapus Barang';$('delete-dialog').showModal();
   }
-  document.addEventListener('click', event => {
-    const button = event.target.closest('button[data-action]');
-    if (button) openOperation(button.dataset.action, button.closest('[data-code]')?.dataset.code || '');
-    const close = event.target.closest('[data-close]'); if (close && !saving) close.closest('dialog').close();
-  });
-  for (const dialog of document.querySelectorAll('.catalog-dialog')) dialog.addEventListener('cancel', event => { if (saving) event.preventDefault(); });
-  byId('movement-form').elements.item_id.addEventListener('change', movementSelection);
-  byId('edit-form').elements.item_id.addEventListener('change', editSelection);
-  byId('edit-photo').addEventListener('change', async () => {
-    const file = byId('edit-photo').files[0], form = byId('edit-form'); photoData = null; byId('edit-photo-preview').hidden = true;
-    if (!file) return;
-    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2*1024*1024) { form.querySelector('.form-error').textContent = 'Gunakan JPG, PNG, atau WebP, maksimal 2 MB.'; byId('edit-photo').value = ''; return; }
-    const selectionId = form.elements.item_id.value;
-    const button = form.querySelector('[type=submit]'); button.disabled = true;
-    try {
-      const loaded = await new Promise((resolve,reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => reject(new Error('Foto gagal dibaca.')); reader.readAsDataURL(file); });
-      if (selectionId !== form.elements.item_id.value || file !== byId('edit-photo').files[0]) return;
-      photoData = loaded;
-      byId('edit-photo-preview').src = photoData; byId('edit-photo-preview').hidden = false; form.querySelector('.form-error').textContent = '';
-    } catch (error) { form.querySelector('.form-error').textContent = error.message; }
-    finally { button.disabled = false; }
-  });
-  function freeze(form, value) { for (const element of form.elements) element.disabled = value; }
-  async function save(form, action, body, message) {
-    if (saving) return; saving = true; freeze(form, true); form.querySelector('.form-error').textContent = '';
-    try {
-      await rpc(action, body); form.closest('dialog').close(); toast(message);
-      try { await reload(); } catch (_) { toast('Tersimpan. Klik Muat Ulang untuk mengambil stok terbaru.'); }
-    } catch (error) { form.querySelector('.form-error').textContent = error.message; }
-    finally { saving = false; freeze(form, false); for (const card of cards) { const item = items.find(row => row.code === card.dataset.code); for (const button of card.querySelectorAll('[data-action]')) button.disabled = !item || (button.dataset.action === 'keluar' && Number(item.stock) === 0); } }
+  function integer(form,name){const value=Number(field(form,name).value);if(!Number.isInteger(value)||value<0||value>1000000000)throw new Error('Gunakan bilangan bulat 0 sampai 1.000.000.000.');return value;}
+  function text(form,name,required=false){const value=field(form,name).value.trim();if(required&&!value)throw new Error('Kolom wajib harus diisi.');return value;}
+  function payload(form,state) {
+    if(state.photoPending)throw new Error('Tunggu pratinjau foto selesai dimuat.');if(state.photoError)throw new Error(state.photoError);
+    const body={request_id:state.request_id};let action;
+    if(form.id==='add-form'||form.id==='edit-form') {
+      for(const name of ['code','unit','name','category'])body[name]=text(form,name,true);
+      body.code=body.code.toUpperCase();body.location=text(form,'location');body.notes=text(form,'notes');body.min_stock=integer(form,'min_stock');
+      if(state.image!==undefined)body.image_data=state.image;
+      if(form.id==='add-form') {action='addItem';body.stock=integer(form,'stock');if(data.items.some(i=>i.code.toUpperCase()===body.code))throw new Error('Kode barang sudah digunakan.');}
+      else {action='editItem';body.item_id=state.item_id;body.version=state.version;body.active=true;}
+    } else if(form.id==='movement-form') {
+      action='movement';Object.assign(body,{item_id:state.item_id,version:state.version,type:state.type,quantity:integer(form,'quantity'),date:text(form,'date',true),person:text(form,'person',true),reference:text(form,'reference'),notes:text(form,'notes')});
+      if(body.quantity===0)throw new Error('Jumlah harus lebih dari nol.');if(body.type==='keluar'&&body.quantity>Number(find(body.item_id).stock))throw new Error('Stok tidak cukup.');
+    } else {action=state.action;Object.assign(body,{item_id:state.item_id,version:state.version});if(action==='deleteItem'&&Number(find(body.item_id).stock)!==0)throw new Error('Stok harus nol sebelum barang dihapus.');}
+    return {action,body};
   }
-  byId('movement-form').addEventListener('submit', event => {
-    event.preventDefault(); const form = event.currentTarget;
-    const body = {request_id:form.dataset.requestId,item_id:Number(form.elements.item_id.value),type:form.dataset.kind,quantity:Number(form.elements.quantity.value)};
-    for (const key of ['date','person','reference','notes']) body[key] = form.elements[key].value;
-    void save(form,'movement',body,'Transaksi tersimpan. Stok sudah diperbarui.');
+  async function submit(event) {
+    event.preventDefault();const form=event.currentTarget,state=formStates.get(form),error=form.querySelector('.form-error');if(busy)return;
+    let request;try{request=state.pending||payload(form,state);}catch(e){error.textContent=e.message;return;}
+    busy=true;controls();error.textContent='Menyimpan…';form.querySelectorAll('input,select,textarea,button').forEach(node=>node.disabled=true);
+    // Persist the exact body for retries after an ambiguous timeout/network failure.
+    state.pending=request;
+    try{await backend.api(request.action,request.body);state.pending=null;form.closest('dialog').close();notify('Berhasil disimpan.');status('Berhasil disimpan. Memuat stok terkini…');}
+    catch(e){error.textContent=e.message+' Untuk mengulang permintaan yang sama, tekan Simpan lagi. Untuk memperbaiki formulir, pilih Batal dan buka kembali.';form.querySelectorAll('button').forEach(node=>node.disabled=false);return;}
+    finally{busy=false;controls();}
+    await reload();
+  }
+  for(const kind of ['add','edit','movement','delete'])$(kind+'-form').addEventListener('submit',submit);
+  for(const kind of ['add','edit']) {
+    const input=$(kind+'-photo'),form=$(kind+'-form'),preview=$(kind+'-photo-preview');
+    input.addEventListener('change',()=>{
+      const state=formStates.get(form),seq=++state.photoSeq,file=input.files[0];state.image=undefined;state.photoError='';state.photoPending=false;preview.hidden=true;preview.removeAttribute('src');
+      if(!file)return;
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2*1024*1024){state.photoError='Gunakan JPG, PNG, atau WebP maksimal 2 MB.';form.querySelector('.form-error').textContent=state.photoError;return;}
+      state.photoPending=true;const reader=new FileReader();reader.onload=()=>{if(formStates.get(form)!==state||state.photoSeq!==seq)return;state.image=reader.result;state.photoPending=false;preview.src=reader.result;preview.hidden=false;form.querySelector('.form-error').textContent='';};reader.onerror=()=>{if(formStates.get(form)!==state||state.photoSeq!==seq)return;state.photoPending=false;state.photoError='Foto gagal dibaca. Pilih kembali.';form.querySelector('.form-error').textContent=state.photoError;};reader.readAsDataURL(file);
+    });
+  }
+  $('edit-form').elements.item_id.addEventListener('change',selectedEdit);
+  $('movement-form').elements.item_id.addEventListener('change',movementStock);
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('button');if(!button)return;
+    if(button.dataset.action)openOperation(button.dataset.action,button.dataset.id);
+    if(button.hasAttribute('data-close')&&!busy)button.closest('dialog').close();
+    if(button.dataset.view){view=button.dataset.view;render();}
   });
-  byId('edit-form').addEventListener('submit', event => {
-    event.preventDefault(); const form = event.currentTarget;
-    const body = {request_id:form.dataset.requestId,item_id:Number(form.elements.item_id.value),version:Number(form.dataset.version),min_stock:Number(form.elements.min_stock.value),active:true};
-    for (const key of ['code','unit','name','category','location','notes']) body[key] = form.elements[key].value;
-    if (photoData) body.image_data = photoData;
-    void save(form,'editItem',body,'Perubahan barang tersimpan.');
-  });
-  byId('reload-stock').addEventListener('click', () => { if (!saving) void reload().catch(() => {}); });
-  byId('open-live').href = appUrl + '?page=katalog';
-  (async () => {
-    if (!live) { status('Pratinjau saldo awal. Masuk akun Google untuk melihat dan memperbarui stok terkini.'); byId('open-live').hidden = false; byId('reload-stock').hidden = true; animateTotal(); return; }
-    for (const button of document.querySelectorAll('[data-action]')) button.disabled = true;
-    for (const card of cards) card.querySelector('.angka').textContent = '…'; byId('totalSouvenir').textContent = '…';
-    try { await reload();
-      const action = document.body.dataset.initialAction, code = document.body.dataset.initialCode;
-      if (['masuk','keluar','edit'].includes(action)) openOperation(action,code);
-    } catch (_) { /* Pesan kegagalan dan tombol muat ulang tetap tersedia. */ }
-  })();
+  document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('cancel',event=>{if(busy)event.preventDefault();}));
+  $('reload-stock').addEventListener('click',reload);
+  $('connect-google').addEventListener('click',async()=>{status('Selesaikan login Google di jendela koneksi…');try{await backend.connect();await reload();}catch(error){status(error.message,true);}});
+  window.addEventListener('backend-disconnected',event=>{stale=true;status(event.detail,true);render();});
+  render();if(backend.native)reload();
 })();

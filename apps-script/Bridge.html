@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font:16px/1.6 system-ui,sans-serif;margin:32px;color:#12364a}h1{font-size:24px}p{max-width:440px}.status{padding:15px;background:#edf7fc;border-radius:10px}a{color:#086ea2}</style></head>
+<body><h1>Koneksi Arsip Suvenir</h1><p id="status" class="status">Menghubungkan katalog…</p>
+<p>Biarkan jendela ini terbuka selama memakai aplikasi. Katalog dan formulir tetap berada di website GitHub Pages.</p>
+<a href="https://webbcpapin.github.io/souvenir/tengah.html" target="_blank" rel="noopener">Buka katalog</a>
+<script>
+(() => {
+  'use strict';
+  const allowedOrigin = 'https://webbcpapin.github.io';
+  const channel = '<?= bridgeChannel ?>';
+  const protocol = 'souvenir-rpc-1';
+  const actions = new Set(['session','state','addItem','editItem','movement','deleteItem','restoreItem','backup','photo']);
+  let parent;
+  try { parent = window.top.opener; } catch {}
+  const status = document.getElementById('status');
+  if (!parent || !/^[a-f0-9-]{36}$/.test(channel)) {
+    status.textContent = 'Buka koneksi melalui tombol Hubungkan Google pada katalog GitHub Pages. Jika baru selesai login, tutup jendela ini lalu hubungkan kembali.';
+    return;
+  }
+  const send = message => parent.postMessage(Object.assign({protocol,channel},message),allowedOrigin);
+  const announce = () => send({kind:'ready'});
+  const announceTimer = setInterval(announce,1000); announce();
+  window.addEventListener('message', event => {
+    const msg = event.data;
+    if (event.origin !== allowedOrigin || event.source !== parent || !msg || msg.protocol !== protocol || msg.channel !== channel) return;
+    if (msg.kind === 'ack') { clearInterval(announceTimer); status.textContent = 'Terhubung. Kembali ke tab katalog untuk memakai aplikasi.'; return; }
+    if (msg.kind !== 'call' || !/^[a-f0-9-]{36}$/.test(msg.id || '') || !actions.has(msg.action)) return;
+    const reply = (ok,data) => send(ok ? {kind:'result',id:msg.id,ok:true,data} : {kind:'result',id:msg.id,ok:false,error:String(data?.message || data)});
+    const runner = google.script.run.withSuccessHandler(data=>reply(true,data)).withFailureHandler(error=>{
+      status.textContent = 'Permintaan ditolak: '+String(error?.message || error); reply(false,error);
+    });
+    // authorize_ runs server-side for EVERY request, including photo reads.
+    msg.action === 'photo' ? runner.getPhoto(msg.body?.id) : runner.api(msg.action,msg.body);
+  });
+})();
+</script></body></html>

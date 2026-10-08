@@ -1,27 +1,5 @@
-FRONTEND ASLI DENGAN BACKEND GOOGLE SHEETS
-
-Frontend kembali memakai vscode.zip. Halaman pembuka, latar gedung,
-header, kartu oranye, foto, teks berjalan, animasi, dan total stok
-dipertahankan. Tambahan UI: Barang Masuk, Barang Keluar, dan Edit Barang.
-Formulir terbuka di atas katalog yang sama.
-
-Google Sheets menyimpan Barang, Transaksi, dan Audit pada database lama.
-Data yang sudah ada tidak diimpor ulang ketika frontend diperbarui.
-Stok dibaca dari backend, kemudian kartu dan total diperbarui.
-Transaksi masuk/keluar dan pencatatan stok memakai batch atomik.
-Permintaan identik yang dikirim ulang tidak menggandakan transaksi.
-Edit memeriksa versi barang sebelum menyimpan perubahan dan audit.
-
-Foto asli di frontend memakai aset website yang sama seperti sumber.
-Foto pengganti melalui Edit Barang disimpan di folder Google Drive.
-Akses backend memakai akun Google yang tercantum dalam ALLOWED_EMAILS.
-Deployment menjalankan aplikasi sebagai User accessing the web app.
-
-HTML Home menyediakan halaman pembuka. Index menyediakan katalog asli.
-Styles dan Client hanya menambahkan formulir, kontrol, dan koneksi backend.
-frontend-source menyimpan sumber tampilan; build_frontend.py menghasilkan
-HTML statis serta template Apps Script dari sumber yang sama.
-
-Pemeriksaan: 12 uji logika backend, 3 uji pelestarian frontend, dan
-uji formulir browser lokal dengan Code.gs serta database simulasi.
-Deployment diperiksa untuk membaca 22 barang dan menampilkan foto asli.
+Frontend dirender seluruhnya oleh GitHub Pages dengan desain sumber vscode.zip.
+Backend popup Bridge kecil menggunakan RPC resmi Google dan pemeriksaan akun server-side.
+Katalog dinamis; tambah/edit, masuk/keluar, hapus logis/restore, riwayat, satuan terpisah.
+Nama dan leaflet diperbaiki tanpa reseed stok.
+Lihat README.md dan tests/HASIL_UJI_BROWSER.md untuk pengujian dan pembaruan deployment.

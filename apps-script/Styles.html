@@ -28,5 +28,30 @@
 .catalog-toast { position: fixed; z-index: 20; bottom: 20px; left: 50%; transform: translateX(-50%); background: #082f49; color: white; border-radius: 8px; padding: 12px 18px; max-width: calc(100% - 30px); box-shadow: 0 4px 20px #0004; }
 [hidden] { display: none !important; }
 @media(max-width:600px) { .navbar { padding: 0 12px; } .navbar .catalog-menu { padding: 14px 10px; } .catalog-status { margin: 15px 20px -10px; } .catalog-dialog .form-grid { grid-template-columns: 1fr; } }
+/* Layout tambahan menjaga kartu oranye dan latar asli. */
+.menu-card { min-width: 0; height: auto; min-height: 270px; animation-delay: 0s !important; }
+.menu-title h2 { overflow-wrap: anywhere; line-height: 1.35; padding: 0 12px; font-size: 19px; }
+.stock-unit { font-size: 16px; font-weight: normal; }
+.stock-line { position: relative; z-index: 2; }
+.item-code { font-size: 12px; margin: 8px; }
+.photo-empty,.photo-warning { font-size: 12px; margin: 8px; }
+.catalog-views { max-width:1100px; margin: 32px auto 0; padding:0 15px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.catalog-views button { border:1px solid #0876b9; border-radius:6px; background:white; color:#075b8e; padding:9px 12px; cursor:pointer; font:inherit; }
+.catalog-views button[aria-pressed="true"] { background:#0876b9; color:white; }
+#unit-summary { width:100%; background:#fffc; border-radius:6px; padding:10px; font-size:14px; }
+.catalog-empty { grid-column:1/-1; background:#fffe; padding:24px; border-radius:8px; color:#075b8e; }
+.history-view { display:block; }
+.history-list { background:#fffe; border-radius:10px; padding:18px; }
+.history-entry { border-bottom:1px solid #ddd; padding:12px 0; overflow-wrap:anywhere; }
+.history-entry p { margin:6px 0; }
+.catalog-dialog .photo-preview { width:100px; height:100px; object-fit:contain; }
+.catalog-dialog,.catalog-dialog * { box-sizing:border-box; }
+.catalog-dialog { max-width:calc(100vw - 28px); }
+.catalog-dialog select { text-overflow:ellipsis; }
+.dialog-buttons { flex-wrap:wrap; }
+#delete-summary { overflow-wrap:anywhere; line-height:1.6; }
+.navbar .catalog-menu[data-action="add"] { background:#fff; color:#075b8e; border-radius:6px; margin:8px 5px; padding:12px; font-weight:bold; }
+@media(max-width:600px){ .nav-left{justify-content:center;width:100%;} .catalog-views{margin:30px 15px 0;padding:0;} .menu-title h2{font-size:18px;} .catalog-dialog{padding:18px;} .total-number{font-size:48px;} }
+@media(prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important;} .menu-card{opacity:1;} }
 
 </style>

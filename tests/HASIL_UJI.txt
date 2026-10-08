@@ -10,5 +10,8 @@ LULUS: Batch gagal tidak mengubah stok atau riwayat, dan lock dilepas.
 LULUS: Arsip stok nol, penolakan transaksi nonaktif dan pemulihan barang aktif.
 LULUS: Foto SVG ditolak. Foto di luar folder aplikasi tidak dapat diakses.
 LULUS: Jejak edit mencatat email pengubah. Header yang berubah menghentikan penulisan.
+LULUS: Hapus dan restore: audit, versi, dedup, foto dan riwayat tetap utuh.
+LULUS: Foto pada tambah dan edit, validasi wajib/bilangan/kode, tidak mengubah stok saat edit.
+LULUS: Migrasi terarah idempotent, nama pengguna tidak ditimpa, stok dan riwayat tidak disentuh.
 
 Uji memakai mock Google Apps Script. Belum uji izin Google, kuota, deployment nyata, dan tampilan browser.

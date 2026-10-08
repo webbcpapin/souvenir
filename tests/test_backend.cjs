@@ -27,6 +27,7 @@ const ctx=vm.createContext({console,Date,Map,JSON,Number,Array,String,Error,Obje
  Sheets:{Spreadsheets:{batchUpdate:(body,id)=>{if(failBatch)throw new Error('Simulasi layanan Google gagal');const book=books.get(id),clones=new Map(book.tabs.map(s=>[s.id,s.grid.map(r=>[...r])]));for(const req of body.requests){const spec=req.appendCells||req.updateCells;const grid=clones.get(spec.sheetId??spec.range.sheetId);const rows=spec.rows.map(r=>r.values.map(c=>Object.values(c.userEnteredValue)[0]));if(req.appendCells)grid.push(...rows);else grid[spec.range.startRowIndex]=rows[0];}for(const s of book.tabs)s.grid=clones.get(s.id);}}}
 });
 vm.runInContext(fs.readFileSync(path.join(root,'apps-script/Seed.gs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'apps-script/Code.gs'),'utf8'),ctx);
+vm.runInContext(fs.readFileSync(path.join(root,'apps-script/Migration.gs'),'utf8'),ctx);
 // Simulasikan database dan folder yang telah diberikan, termasuk tab lain yang harus dipertahankan.
 const backendResources=vm.runInContext('BACKEND_RESOURCES',ctx);
 const providedBook=new Book();books.delete(providedBook.id);providedBook.id=backendResources.spreadsheetId;books.set(providedBook.id,providedBook);
@@ -47,5 +48,32 @@ test('Batch gagal tidak mengubah stok atau riwayat, dan lock dilepas.',()=>{cons
 test('Arsip stok nol, penolakan transaksi nonaktif dan pemulihan barang aktif.',()=>{let i=find('TEST-01');api('movement',req({item_id:i.id,type:'keluar',quantity:1,person:'Penerima'}));i=find('TEST-01');api('editItem',req({...i,item_id:i.id,active:false}));assert.throws(()=>api('movement',req({item_id:i.id,type:'masuk',quantity:1,person:'Penerima'})),/barang aktif/);i=find('TEST-01');api('editItem',req({...i,item_id:i.id,active:true}));assert.equal(find('TEST-01').active,1)});
 test('Foto SVG ditolak. Foto di luar folder aplikasi tidak dapat diakses.',()=>{assert.throws(()=>api('addItem',req({...newItem,code:'TEST-SVG',image_data:'data:image/svg+xml;base64,PHN2Zz4='})),/JPG/);const outside=new Folder('Di luar aplikasi').createFile({name:'test.png',mime:'image/png',bytes:[1]});assert.throws(()=>ctx.getPhoto(outside.id),/folder aplikasi/)});
 test('Jejak edit mencatat email pengubah. Header yang berubah menghentikan penulisan.',()=>{const book=books.get(props.get('SPREADSHEET_ID'));assert(book.getSheetByName('Audit').grid.slice(1).every(row=>row[6]==='owner@example.test'));const sheet=book.getSheetByName('Barang');const original=sheet.grid[0][1];sheet.grid[0][1]='rusak';assert.throws(()=>api('addItem',req({...newItem,code:'TEST-HEADER'})),/Kolom Barang berubah/);sheet.grid[0][1]=original});
+test('Hapus dan restore: audit, versi, dedup, foto dan riwayat tetap utuh.',()=>{
+ let i=find('TEST-01');assert.equal(i.stock,0);const photo=i.image,count=state().movements.length;
+ const remove=req({item_id:i.id,version:i.version});api('deleteItem',remove);assert(api('deleteItem',remove).duplicate);
+ assert.equal(find('TEST-01').active,0);assert.equal(find('TEST-01').image,photo);assert.equal(state().movements.length,count);
+ const audit=api('backup').audit.find(a=>a.request_id===remove.request_id);assert.equal(audit.action,'delete');assert.equal(audit.actor_email,'owner@example.test');
+ assert.throws(()=>api('restoreItem',req(remove)),/sudah berubah/);
+ i=find('TEST-01');api('restoreItem',req({item_id:i.id,version:i.version}));assert.equal(find('TEST-01').active,1);
+ api('movement',req({item_id:i.id,type:'masuk',quantity:1,person:'TEST'}));i=find('TEST-01');assert.throws(()=>api('deleteItem',req({item_id:i.id,version:i.version})),/Stok harus nol/);
+});
+test('Foto pada tambah dan edit, validasi wajib/bilangan/kode, tidak mengubah stok saat edit.',()=>{
+ const png='data:image/png;base64,'+fs.readFileSync(path.join(root,'foto-awal/pin.png')).toString('base64');
+ api('addItem',req({...newItem,code:'TEST-PHOTO',image_data:png}));let i=find('TEST-PHOTO');const previous=i.image;assert(ctx.getPhoto(i.image).startsWith('data:image/png'));
+ api('editItem',req({...i,item_id:i.id,active:true,name:'Foto kedua',image_data:png}));i=find('TEST-PHOTO');assert.notEqual(i.image,previous);assert.equal(i.stock,newItem.stock);assert(files.has(previous));
+ assert.throws(()=>api('addItem',req({...newItem,code:'TEST BAD'})),/Kode hanya/);
+ assert.throws(()=>api('addItem',req({...newItem,code:'TEST-REQ',name:' '})),/wajib/);
+ for(const stock of [-1,1.5])assert.throws(()=>api('addItem',req({...newItem,code:'TEST-NUM',stock})),/bilangan bulat/);
+ assert.throws(()=>api('movement',req({item_id:i.id,version:i.version-1,type:'masuk',quantity:1,person:'TEST'})),/sudah berubah/);
+});
+test('Migrasi terarah idempotent, nama pengguna tidak ditimpa, stok dan riwayat tidak disentuh.',()=>{
+ const sheet=providedBook.getSheetByName('Barang');let row=sheet.grid.find(row=>row[1]==='ARS-003');row[2]='Flayer Imei';
+ const custom=sheet.grid.find(row=>row[1]==='ARS-007');custom[2]='Nama pilihan pengelola';
+ const pcm=sheet.grid.find(row=>row[1]==='ARS-019');pcm[13]='leaflet4.png';
+ const before=state().items.map(i=>[i.id,i.code,i.stock,i.unit]);const count=state().movements.length;
+ assert.equal(ctx.migrateKnownCorrections_().corrected,2);assert.equal(ctx.migrateKnownCorrections_().corrected,0);
+ assert.equal(find('ARS-003').name,'Flyer Pendaftaran IMEI');assert.equal(find('ARS-007').name,'Nama pilihan pengelola');assert.equal(find('ARS-019').seed_filename,'leaflet1.png');
+ assert.deepEqual(state().items.map(i=>[i.id,i.code,i.stock,i.unit]),before);assert.equal(state().movements.length,count);
+});
 console.log('\n'+cases.length+' pengujian logika lulus. Layanan Google memakai mock, bukan pengujian deployment nyata.');
 fs.writeFileSync(path.join(root,'tests/HASIL_UJI.txt'),cases.map(n=>'LULUS: '+n).join('\n')+'\n\nUji memakai mock Google Apps Script. Belum uji izin Google, kuota, deployment nyata, dan tampilan browser.\n');
