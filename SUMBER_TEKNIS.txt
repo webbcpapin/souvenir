@@ -1,0 +1,30 @@
+Dokumentasi resmi Google yang diperiksa pada 8 Oktober 2026:
+
+Google Apps Script Web Apps:
+https://developers.google.com/apps-script/guides/web
+Menerangkan deployment dan perbedaan execute as owner/user.
+
+Komunikasi halaman HTML dengan fungsi server:
+https://developers.google.com/apps-script/guides/html/communication
+Menerangkan google.script.run, callback keberhasilan/kegagalan,
+dan fungsi privat yang berakhiran garis bawah.
+
+Google Sheets spreadsheets.batchUpdate:
+https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/batchUpdate
+Menerangkan validasi dan penerapan perubahan batch secara atomik.
+
+Advanced Google services:
+https://developers.google.com/apps-script/guides/services/advanced
+Menerangkan aktivasi layanan lanjutan dan Google Cloud API.
+
+Google Apps Script Session:
+https://developers.google.com/apps-script/reference/base/session
+Menerangkan identitas pengguna dan kondisi ketersediaan email.
+
+Google Apps Script Lock Service:
+https://developers.google.com/apps-script/reference/lock/lock-service
+Menerangkan kunci untuk akses sumber daya bersama.
+
+Google Drive Folder:
+https://developers.google.com/apps-script/reference/drive/folder
+Menerangkan pembuatan berkas dari blob di dalam folder Drive.

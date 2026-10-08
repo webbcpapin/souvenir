@@ -1,0 +1,245 @@
+// Data awal berdasarkan HTML sumber. Verifikasi jumlah fisik.
+const INITIAL_ITEMS = [
+  {
+    "code": "ARS-001",
+    "name": "Topi",
+    "stock": 10,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "topi.png"
+  },
+  {
+    "code": "ARS-002",
+    "name": "Tas Pinggang Gempur",
+    "stock": 3,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "tas-pinggang-gempur.png"
+  },
+  {
+    "code": "ARS-003",
+    "name": "Flyer Pendaftaran IMEI",
+    "stock": 24,
+    "category": "Publikasi",
+    "unit": "lembar",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "flyerimei.png"
+  },
+  {
+    "code": "ARS-004",
+    "name": "Flyer Barang Impor Bawaan Penumpang",
+    "stock": 25,
+    "category": "Publikasi",
+    "unit": "lembar",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "penumpang.png"
+  },
+  {
+    "code": "ARS-005",
+    "name": "Flyer Fasilitas Barang Keperluan Hadiah, Amal, Sosial, Kebudayaan, atau Bencana Alam",
+    "stock": 21,
+    "category": "Publikasi",
+    "unit": "lembar",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "keperluan.png"
+  },
+  {
+    "code": "ARS-006",
+    "name": "Flyer Fasilitas Pertahanan dan Keamanan Negara",
+    "stock": 29,
+    "category": "Publikasi",
+    "unit": "lembar",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "pertahanan.png"
+  },
+  {
+    "code": "ARS-007",
+    "name": "Buku Catatan Spiral Bea Cukai Pangkalpinang",
+    "stock": 4,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "notebook.png"
+  },
+  {
+    "code": "ARS-008",
+    "name": "Gelas Mug",
+    "stock": 4,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "gelas.png"
+  },
+  {
+    "code": "ARS-009",
+    "name": "Buku Informasi dan Identifikasi Pita Cukai Desain Tahun 2024",
+    "stock": 1,
+    "category": "Publikasi",
+    "unit": "buku",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "pita-cukai.jpeg"
+  },
+  {
+    "code": "ARS-010",
+    "name": "Tas Jinjing Biru",
+    "stock": 59,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "totebag.png"
+  },
+  {
+    "code": "ARS-011",
+    "name": "Payung",
+    "stock": 7,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "payung.png"
+  },
+  {
+    "code": "ARS-012",
+    "name": "Masker Kain Bea Cukai",
+    "stock": 3,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "masker.png"
+  },
+  {
+    "code": "ARS-013",
+    "name": "Kaos Hitam Gempur",
+    "stock": 1,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "baju.png"
+  },
+  {
+    "code": "ARS-014",
+    "name": "Pin BC Papin",
+    "stock": 3,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "pin.png"
+  },
+  {
+    "code": "ARS-015",
+    "name": "Jam Meja",
+    "stock": 1,
+    "category": "Suvenir",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "jam.png"
+  },
+  {
+    "code": "ARS-016",
+    "name": "Buku/Modul Bea Cukai",
+    "stock": 9,
+    "category": "Publikasi",
+    "unit": "buku",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "modul.png"
+  },
+  {
+    "code": "ARS-017",
+    "name": "Leaflet PCHT (Kemasan Pak)",
+    "stock": 50,
+    "category": "Publikasi",
+    "unit": "pak",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber. Verifikasi satuan dan jumlah fisik, khususnya leaflet dalam kemasan pak.",
+    "seed_filename": "leaflet4.png"
+  },
+  {
+    "code": "ARS-018",
+    "name": "Leaflet PCHPTL dan PCREL (Kemasan Pak)",
+    "stock": 25,
+    "category": "Publikasi",
+    "unit": "pak",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber. Verifikasi satuan dan jumlah fisik, khususnya leaflet dalam kemasan pak.",
+    "seed_filename": "leaflet2.png"
+  },
+  {
+    "code": "ARS-019",
+    "name": "Leaflet PCMMEA (Kemasan Pak)",
+    "stock": 50,
+    "category": "Publikasi",
+    "unit": "pak",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber. Verifikasi satuan dan jumlah fisik, khususnya leaflet dalam kemasan pak.",
+    "seed_filename": "leaflet1.png"
+  },
+  {
+    "code": "ARS-020",
+    "name": "Leaflet PCHPTL dan PCREL (Lepasan)",
+    "stock": 49,
+    "category": "Publikasi",
+    "unit": "lembar",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "leaflet3.png"
+  },
+  {
+    "code": "ARS-021",
+    "name": "Kartu Nama",
+    "stock": 1,
+    "category": "Publikasi",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "kartunama.png"
+  },
+  {
+    "code": "ARS-022",
+    "name": "Plakat Penghargaan",
+    "stock": 5,
+    "category": "Penghargaan",
+    "unit": "buah",
+    "min_stock": 0,
+    "location": "",
+    "notes": "Jumlah awal mengikuti HTML sumber.",
+    "seed_filename": "penghargaan.png"
+  }
+];

@@ -1,0 +1,93 @@
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let items = [], movements = [], imageData = null, previewURL = null;
+let resourceLinks = {};
+const photoCache = new Map();
+const requestId = () => crypto.randomUUID();
+function rpc(name,...args) { return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(error=>reject(new Error(error.message||String(error))))[name](...args)); }
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = value => Number(value).toLocaleString('id-ID');
+const typeName = {awal:'Saldo awal', masuk:'Masuk', keluar:'Keluar', koreksi:'Koreksi'};
+const localDate = () => {const d = new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+async function api(path,method='GET',body={}) {
+  let action=path;
+  if(path==='items'&&method==='POST')action='addItem';
+  else if(path.startsWith('items/')&&method==='PUT'){action='editItem';body.item_id=Number(path.split('/')[1]);}
+  else if(path==='movements'&&method==='POST')action='movement';
+  return rpc('api',action,body);
+}
+let toastTimer;
+function toast(message) {$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500);}
+function showLogin(message='') {$('login-panel').hidden=false;$('workspace').hidden=true;$('add').disabled=true;$('connection').textContent='Koneksi belum siap';$('login-error').textContent=message;}
+async function reload() {
+  const state = await api('state');
+  items=state.items;movements=state.movements;resourceLinks=state;
+  $('account').textContent=state.email;
+  $('login-panel').hidden=true;$('workspace').hidden=false;$('add').disabled=false;$('connection').textContent='Google Sheets terhubung';
+  const cats=[...new Set(items.map(i=>i.category))].sort();const previous=$('category').value;
+  $('category').innerHTML='<option value="">Semua kategori</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');$('category').value=previous;
+  $('categories').innerHTML=[...new Set(['Suvenir','Publikasi','Penghargaan','Perlengkapan',...cats])].map(c=>`<option>${esc(c)}</option>`).join('');
+  $('types').textContent=fmt(items.filter(i=>i.active).length);$('low').textContent=fmt(items.filter(i=>i.active&&i.stock<=i.min_stock).length);
+  $('incoming').textContent=fmt(movements.filter(m=>m.type==='masuk').length);$('outgoing').textContent=fmt(movements.filter(m=>m.type==='keluar').length);
+  renderItems();renderHistory();
+}
+function filteredItems() {const q=$('search').value.toLowerCase();return items.filter(i=>`${i.name} ${i.code}`.toLowerCase().includes(q)&&(!$('category').value||i.category===$('category').value)&&($('status').value==='all'||($('status').value==='archived'?!i.active:$('status').value==='low'?i.active&&i.stock<=i.min_stock:i.active)));}
+function renderItems() {
+  const rows=filteredItems();$('empty').hidden=rows.length>0;
+  $('grid').innerHTML=rows.map(i=>`<article class="card"><div class="photo-box">${i.image?`<img data-file-id="${esc(i.image)}" alt="${esc(i.name)}" loading="lazy">`:'<span class="placeholder">Belum ada foto</span>'}<span class="badge">${esc(i.active?i.category:'Diarsipkan')}</span></div><div class="card-body"><span class="code">${esc(i.code)}</span><h2>${esc(i.name)}</h2><div class="stock ${i.stock<=i.min_stock?'low':''}"><strong>${fmt(i.stock)}</strong><span>${esc(i.unit)}${i.stock<=i.min_stock?' · '+(i.stock===0?'Habis':'Menipis'):''}</span></div><p class="location">${esc(i.location||'Lokasi belum diisi')}</p><div class="card-buttons">${i.active?`<button class="in" data-action="masuk" data-id="${i.id}">+ Barang Masuk</button><button class="out" data-action="keluar" data-id="${i.id}" ${i.stock===0?'disabled':''}>− Barang Keluar</button><button class="edit" data-action="edit" data-id="${i.id}">Edit Barang</button><button class="edit" data-action="koreksi" data-id="${i.id}">Koreksi Stok</button>`:`<button class="edit" data-action="edit" data-id="${i.id}">Edit / Aktifkan</button>`}</div></div></article>`).join('');
+  loadVisiblePhotos();
+}
+function filteredMovements(){const q=$('history-search').value.toLowerCase();const from=$('date-from').value,to=$('date-to').value;return movements.filter(m=>`${m.name} ${m.code} ${m.person} ${m.reference} ${m.notes}`.toLowerCase().includes(q)&&(!$('history-type').value||m.type===$('history-type').value)&&(!from||m.date>=from)&&(!to||m.date<=to));}
+function renderHistory() {$('history').innerHTML=filteredMovements().map(m=>`<tr><td>${esc(m.date.split('-').reverse().join('/'))}</td><td>${esc(m.name)}<small>${esc(m.code)}</small></td><td>${typeName[m.type]}</td><td>${m.type==='koreksi'&&m.quantity>0?'+':''}${fmt(m.quantity)} ${esc(m.unit)}</td><td>${fmt(m.before_stock)} → ${fmt(m.after_stock)}</td><td>${esc(m.person)}</td><td>${esc(m.reference||'−')}<small>${esc(m.notes)}</small></td></tr>`).join('')||'<tr><td colspan="7">Belum ada transaksi yang sesuai.</td></tr>';}
+function photoReset(){imageData=null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;$('photo').value='';$('photo-preview').hidden=true;}
+function editItem(item){const form=$('item-form');form.reset();form.dataset.requestId=requestId();photoReset();form.querySelector('.form-error').textContent='';
+  const editing=!!item;$('item-title').textContent=editing?'Edit Barang':'Tambah Barang';$('initial-label').hidden=editing;$('active-label').hidden=!editing;$('edit-hint').hidden=!editing;
+  form.elements.code.disabled=editing;form.elements.unit.disabled=editing;form.elements.stock.required=!editing;
+  for(const key of ['id','version','code','name','category','unit','stock','min_stock','location','notes'])form.elements[key].value=item?.[key]??(key==='stock'||key==='min_stock'?0:'');
+  form.elements.active.value=item?.active===0?'false':'true';
+  if(!editing){form.elements.code.value='ARS-'+String(Math.max(0,...items.map(i=>Number(i.code.match(/^ARS-(\d+)$/)?.[1]||0)))+1).padStart(3,'0');form.elements.category.value='Suvenir';form.elements.unit.value='buah';}
+  if(item?.image){const cached=photoCache.get(item.image);if(cached){$('photo-preview').src=cached;$('photo-preview').hidden=false;}else rpc('getPhoto',item.image).then(data=>{photoCache.set(item.image,data);if(!imageData&&$('item-dialog').open&&form.elements.id.value===String(item.id)){$('photo-preview').src=data;$('photo-preview').hidden=false;}}).catch(()=>{});}
+  $('item-dialog').showModal();
+}
+function openMovement(item,kind){const form=$('move-form');form.reset();form.dataset.requestId=requestId();form.querySelector('.form-error').textContent='';form.elements.item_id.value=item.id;form.elements.version.value=item.version;form.elements.type.value=kind;form.elements.date.value=localDate();form.elements.date.max=localDate();
+  $('move-title').textContent=kind==='koreksi'?'Koreksi Stok Fisik':kind==='masuk'?'Barang Masuk':'Barang Keluar';$('move-item').textContent=`${item.name} (${item.code}). Stok saat ini: ${fmt(item.stock)} ${item.unit}.`;
+  $('quantity-label').textContent=kind==='koreksi'?`Stok fisik sesudah koreksi (${item.unit})`:`Jumlah (${item.unit})`;form.elements.quantity.min=kind==='koreksi'?0:1;form.elements.quantity.max=kind==='keluar'?item.stock:1000000000;if(kind==='koreksi')form.elements.quantity.value=item.stock;
+  $('person-label').textContent=kind==='masuk'?'Pemasok / penyerah':kind==='keluar'?'Penerima / penanggung jawab':'Petugas pemeriksa';form.elements.notes.required=kind==='koreksi';$('notes-label').textContent=kind==='koreksi'?'Alasan koreksi (wajib)':'Keperluan / catatan';$('move-dialog').showModal();
+}
+$('grid').addEventListener('click',event=>{const button=event.target.closest('button[data-id]');if(!button)return;const item=items.find(i=>i.id===Number(button.dataset.id));if(button.dataset.action==='edit')editItem(item);else openMovement(item,button.dataset.action);});
+$('add').addEventListener('click',()=>editItem());
+for(const id of ['search','category','status'])$(id).addEventListener('input',renderItems);
+for(const id of ['history-search','history-type','date-from','date-to'])$(id).addEventListener('input',renderHistory);
+for(const id of ['items','history'])$('tab-'+id).addEventListener('click',()=>{for(const other of ['items','history']){$(other+'-panel').hidden=other!==id;$('tab-'+other).setAttribute('aria-pressed',String(other===id));}});
+for(const button of document.querySelectorAll('.close'))button.addEventListener('click',()=>button.closest('dialog').close());
+$('photo').addEventListener('change',async()=>{const file=$('photo').files[0];if(!file)return;const error=$('item-form').querySelector('.form-error');error.textContent='';if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2*1024*1024){photoReset();error.textContent='Gunakan JPG, PNG, atau WebP, maksimal 2 MB.';return;}
+ const submit=$('item-form').querySelector('[type=submit]');submit.disabled=true;
+ try {const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Foto gagal dibaca.'));reader.readAsDataURL(file);});imageData=data;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=URL.createObjectURL(file);$('photo-preview').src=previewURL;$('photo-preview').hidden=false;}
+ catch(e){error.textContent=e.message;}finally{submit.disabled=false;}
+});
+$('item-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const button=form.querySelector('[type=submit]');button.disabled=true;const body={request_id:form.dataset.requestId};for(const key of ['code','name','category','unit','location','notes'])body[key]=form.elements[key].value;body.stock=Number(form.elements.stock.value);body.min_stock=Number(form.elements.min_stock.value);body.active=form.elements.active.value==='true';body.version=Number(form.elements.version.value);if(imageData)body.image_data=imageData;const id=form.elements.id.value;
+ try{await api(id?'items/'+id:'items',id?'PUT':'POST',body);$('item-dialog').close();toast('Barang berhasil disimpan.');await reload();}catch(e){form.querySelector('.form-error').textContent=e.message;}finally{button.disabled=false;}
+});
+$('move-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,button=form.querySelector('[type=submit]');button.disabled=true;const body={request_id:form.dataset.requestId};for(const key of ['item_id','version','quantity'])body[key]=Number(form.elements[key].value);for(const key of ['type','date','person','reference','notes'])body[key]=form.elements[key].value;
+ try{await api('movements','POST',body);$('move-dialog').close();toast('Transaksi tersimpan. Stok telah diperbarui.');await reload();}catch(e){form.querySelector('.form-error').textContent=e.message;}finally{button.disabled=false;}
+});
+$('retry').addEventListener('click',()=>reload().catch(e=>showLogin(e.message)));
+$('refresh').addEventListener('click',()=>reload().catch(e=>toast(e.message)));
+$('open-sheet').addEventListener('click',()=>{if(resourceLinks.spreadsheet_url)window.open(resourceLinks.spreadsheet_url,'_blank','noopener');});
+$('open-drive').addEventListener('click',()=>{if(resourceLinks.folder_url)window.open(resourceLinks.folder_url,'_blank','noopener');});
+$('backup').addEventListener('click',async()=>{try{const state=await api('backup');const blob=new Blob([JSON.stringify({exported_at:new Date().toISOString(),...state},null,2)],{type:'application/json'});downloadBlob(blob,'cadangan-arsip-'+localDate()+'.json');toast('Cadangan data diunduh. Foto tetap tersimpan di Google Drive.');}catch(e){toast(e.message);}});
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function csvDownload(name,rows){const cell=value=>{let str=String(value??'');if(/^[=+@\-\t\r]/.test(str))str="'"+str;return '"'+str.replaceAll('"','""')+'"';};const blob=new Blob(['\ufeff'+rows.map(row=>row.map(cell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+$('export-items').addEventListener('click',()=>csvDownload('persediaan-'+localDate()+'.csv',[['Kode','Nama','Kategori','Stok','Satuan','Minimum','Lokasi','Status','Catatan'],...filteredItems().map(i=>[i.code,i.name,i.category,i.stock,i.unit,i.min_stock,i.location,i.active?'Aktif':'Diarsipkan',i.notes])]));
+$('export-history').addEventListener('click',()=>csvDownload('transaksi-'+localDate()+'.csv',[['Tanggal','Kode','Nama','Jenis','Jumlah / Selisih','Satuan','Stok Sebelum','Stok Sesudah','Pihak Terkait','Referensi','Catatan'],...filteredMovements().map(m=>[m.date,m.code,m.name,typeName[m.type],m.quantity,m.unit,m.before_stock,m.after_stock,m.person,m.reference,m.notes])]));
+let photoObserver;
+const photoQueue=[];let photoLoading=0;
+function runPhotoQueue(){while(photoLoading<3&&photoQueue.length){const img=photoQueue.shift();if(!img.isConnected)continue;const id=img.dataset.fileId;if(photoCache.has(id)){img.src=photoCache.get(id);continue;}photoLoading++;rpc('getPhoto',id).then(data=>{photoCache.set(id,data);if(img.isConnected)img.src=data;}).catch(()=>{if(img.isConnected){const label=document.createElement('span');label.className='placeholder';label.textContent='Foto belum dapat dimuat';img.replaceWith(label);}}).finally(()=>{photoLoading--;runPhotoQueue();});}}
+function loadVisiblePhotos(){if(photoObserver)photoObserver.disconnect();photoQueue.length=0;photoObserver=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){photoObserver.unobserve(entry.target);photoQueue.push(entry.target);}runPhotoQueue();},{rootMargin:'200px'});for(const img of document.querySelectorAll('img[data-file-id]'))photoObserver.observe(img);}
+(async()=>{
+ if(typeof google==='undefined'||!google.script?.run){showLogin('Buka aplikasi melalui URL Web App Google Apps Script setelah deployment. Berkas HTML ini memakai backend Google, bukan server lokal.');return;}
+ try{await reload();}catch(e){showLogin(e.message);}
+})();
+
+</script>

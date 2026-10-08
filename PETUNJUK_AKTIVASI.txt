@@ -1,0 +1,129 @@
+ARSIP PERSEDIAAN. BACKEND GOOGLE SHEETS DAN GOOGLE DRIVE
+Versi 8 Oktober 2026
+
+ALUR APLIKASI
+Formulir HTML -> Google Apps Script -> Google Sheets dan Google Drive.
+Data barang, stok, transaksi, dan jejak edit: Google Sheets.
+Foto barang: Google Drive. Foto tidak perlu dibagikan kepada publik.
+Akses pengelola: akun Google yang masuk daftar akses.
+Tidak memakai server Python, SQLite, atau server lokal.
+Internet diperlukan untuk memakai aplikasi.
+
+AKTIVASI SEKALI DI AKUN GOOGLE ANDA
+1. Ekstrak ZIP ini.
+2. Buka https://script.google.com dan buat New project.
+   Nama proyek: Arsip Persediaan BC Pangkalpinang.
+3. Salin isi apps-script/Code.gs ke berkas Code.gs dalam proyek.
+4. Tambahkan berkas script bernama Seed. Salin isi Seed.gs.
+5. Tambahkan tiga berkas HTML dengan nama persis:
+   Index, Styles, dan Client.
+   Salin isi masing-masing Index.html, Styles.html, dan Client.html.
+   Nama di editor tidak perlu ditulis dengan akhiran .html.
+6. Buka Project Settings. Aktifkan Show appsscript.json manifest file.
+   Ganti isinya dengan appsscript.json dalam paket.
+7. Periksa bagian Services. Google Sheets API versi v4 harus tercantum.
+   Jika belum tercantum, klik +, pilih Google Sheets API, lalu Add.
+   Jika menggunakan proyek Google Cloud buatan sendiri, aktifkan
+   Google Sheets API di proyek Cloud tersebut juga.
+8. Simpan proyek. Pilih fungsi setupArsip_, lalu klik Run.
+   Izinkan akses akun Google yang diminta untuk Sheets, Drive, dan email.
+9. Execution log menampilkan URL Google Sheets dan folder foto.
+   Code.gs dalam repositori ini memakai sumber daya yang diberikan:
+   - Google Sheets: 1b4lPrq0HWIn4QDqYQ63VcVC6JZNWZAZP7051JKtyGE0.
+   - Folder foto: 1h6vz-ORzURJn7hP4gmigDu-MuKmPhYRT.
+   Script Properties yang sudah terisi tetap dipakai.
+   Setup membuat tab yang belum tersedia:
+   - Tab Barang, Transaksi, dan Audit.
+   - 22 jenis barang dan catatan saldo awal dari aplikasi sumber.
+   Setup berulang tidak menggandakan saldo awal yang sudah diimpor.
+10. Buka folder Foto Barang yang tampil pada Execution log.
+    Unggah seluruh isi folder foto-awal dari paket ini ke folder tersebut.
+    Unggah berkas fotonya, bukan ZIP. Pertahankan nama berkas.
+11. Pilih fungsi sinkronFotoAwal_, lalu klik Run.
+    Script menghubungkan foto dengan barang berdasarkan nama berkas.
+    Fungsi ini tidak mengubah stok atau mengganti foto yang sudah diisi.
+12. Klik Deploy -> New deployment -> Web app.
+    Execute as: User accessing the web app.
+    Who has access: pilih opsi pengguna dengan akun Google,
+    atau hanya pengguna dalam organisasi jika tersedia dan sesuai.
+    Jangan memilih Execute as me untuk konfigurasi autentikasi ini.
+13. Klik Deploy. Simpan URL Web app yang berakhir dengan /exec.
+14. Buka URL tersebut dengan akun yang menjalankan setupArsip_.
+    Izinkan akses Google saat diminta. Aplikasi langsung memuat data.
+
+Daftar sumber resmi Google tersedia di SUMBER_TEKNIS.txt.
+Akun kantor dapat memiliki pembatasan Apps Script dari administrator.
+Jika deployment ditolak oleh kebijakan organisasi, pengelola akun perlu
+mengaktifkan akses yang diperlukan sebelum aplikasi dapat dipakai.
+
+MENAMBAHKAN PEGAWAI PENGELOLA
+1. Project Settings -> Script Properties.
+2. Ubah ALLOWED_EMAILS menjadi array JSON berisi email lengkap.
+   Contoh bentuk, bukan email pengguna sesungguhnya:
+   ["pemilik@example.com","pengelola@example.com"]
+   Gunakan huruf kecil. Akun pemilik harus tetap ada dalam daftar.
+3. Bagikan Google Sheets dan folder foto yang dikonfigurasi kepada
+   email tersebut dengan peran Editor. Keduanya perlu dibagikan
+   secara terpisah karena spreadsheet berada di luar folder foto.
+4. Bagikan URL Web app /exec kepada pegawai.
+   Pegawai membuka URL dengan akun Google yang terdaftar dan memberikan
+   izin pada penggunaan pertama.
+
+Backend membaca identitas akun Google. Setiap transaksi dan jejak edit
+mencatat actor_email otomatis. Nama penerima/penyerah tetap diisi manual.
+Versi ini belum memisahkan hak petugas baca dan petugas edit.
+Seluruh akun dalam ALLOWED_EMAILS adalah pengelola yang dapat mengedit.
+Pengelola tidak perlu diberi akses editor proyek Apps Script untuk memakai
+Web app. Akses editor proyek hanya untuk pemelihara aplikasi.
+
+PEMAKAIAN
+Tambah Barang: isi identitas, saldo awal, satuan, lokasi, batas minimum,
+catatan, dan foto. Foto baru langsung tersimpan di Google Drive.
+Batas foto JPG, PNG, atau WebP adalah 2 MB.
+Edit Barang: ubah nama, kategori, lokasi, catatan, minimum, atau foto.
+Kode dan satuan tetap agar riwayat tidak berubah makna.
+Barang Masuk/Keluar: isi tanggal, jumlah, pihak terkait, dan referensi.
+Koreksi Stok: isi jumlah fisik akhir, petugas pemeriksa, dan alasan.
+Barang dapat diarsipkan saat stok nol. Riwayat tetap tersedia.
+Muat Ulang: ambil data terbaru jika pegawai lain baru bertransaksi.
+Riwayat: cari dan filter jenis/tanggal, lalu ekspor CSV jika dibutuhkan.
+Buka Google Sheets: buka database dengan akun Google Anda.
+Folder Foto: buka penyimpanan foto aplikasi.
+Ekspor Cadangan JSON: unduh barang, transaksi, dan audit.
+Cadangan JSON berisi ID foto, tidak memuat berkas foto Drive.
+Untuk cadangan foto, unduh folder Foto Barang melalui Google Drive.
+Versi ini belum memiliki fitur pemulihan otomatis dari cadangan JSON.
+
+MEMPERBARUI APLIKASI
+Salin perubahan kode ke proyek yang sama.
+Deploy -> Manage deployments -> Edit -> New version -> Deploy.
+Gunakan proyek, SPREADSHEET_ID, dan PHOTO_FOLDER_ID yang sama.
+Tidak perlu menjalankan ulang setup atau mengunggah foto lama.
+
+INTEGRITAS DATA
+Server memakai Script Lock untuk mengatur permintaan bersamaan.
+Perubahan stok dan catatan transaksi dikirim sebagai satu batch atomik
+Google Sheets API. Edit identitas dan jejak edit juga memakai satu batch.
+ID permintaan mencegah pengiriman ulang identik menggandakan transaksi.
+Jika koneksi gagal, coba simpan kembali dengan formulir yang sama.
+Jika hasil sudah tersimpan, server mengembalikan hasil tanpa menambah stok
+atau transaksi lagi.
+Jangan mengubah kolom, urutan baris, angka stok, atau transaksi langsung
+melalui Sheets saat aplikasi digunakan. Perubahan langsung tidak melalui
+validasi, lock, atau audit aplikasi. Gunakan menu aplikasi untuk mengubahnya.
+Kegagalan unggah atau penyimpanan dapat menyisakan foto di folder Drive.
+Script tidak menghapus foto secara otomatis saat hasil penyimpanan belum
+pasti, agar foto yang telah terhubung tidak ikut terhapus.
+
+DATA AWAL
+Nama dan gambar mengikuti hasil koreksi foto pada aplikasi sebelumnya.
+22 jenis barang, angka stok, serta catatan awal bersumber dari HTML Anda.
+Satuan pak/lembar pada leaflet perlu dicocokkan dengan barang fisik.
+Verifikasi fisik sebelum memakai angka awal sebagai catatan operasional.
+
+PENGUJIAN YANG SUDAH DILAKUKAN
+12 pengujian logika backend menggunakan simulasi layanan Google lulus.
+Sintaks JavaScript dan struktur HTML diperiksa.
+Belum ada pengujian deployment, izin akun Google, kuota, atau browser nyata.
+Paket ini sudah memuat kode untuk konfigurasi tersebut. Google Sheets,
+folder foto, dan URL aplikasi baru terbentuk setelah langkah aktivasi.

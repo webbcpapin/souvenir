@@ -1,0 +1,14 @@
+LULUS: Setup memakai database dan folder yang diberikan, mempertahankan tab lama, dan tidak menggandakan 22 saldo awal.
+LULUS: Folder foto privat, sinkronisasi 22 foto awal, pembacaan foto melalui backend.
+LULUS: Akun di luar daftar akses ditolak pada data dan foto.
+LULUS: Tambah dan pengiriman ulang identik hanya menghasilkan satu barang dan saldo awal.
+LULUS: Keluar mengurangi stok, masuk menambah stok, transaksi ulang tidak menggandakan stok.
+LULUS: Penolakan stok negatif, pecahan, tanggal mendatang dan tanggal kalender keliru.
+LULUS: Edit dan foto baru tersimpan. Edit versi lama dan perubahan satuan ditolak.
+LULUS: Koreksi berselisih dicatat. Versi lama, tanpa alasan, dan arsip dengan stok ditolak.
+LULUS: Batch gagal tidak mengubah stok atau riwayat, dan lock dilepas.
+LULUS: Arsip stok nol, penolakan transaksi nonaktif dan pemulihan barang aktif.
+LULUS: Foto SVG ditolak. Foto di luar folder aplikasi tidak dapat diakses.
+LULUS: Jejak edit mencatat email pengubah. Header yang berubah menghentikan penulisan.
+
+Uji memakai mock Google Apps Script. Belum uji izin Google, kuota, deployment nyata, dan tampilan browser.
