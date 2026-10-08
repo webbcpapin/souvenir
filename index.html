@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ARSIP SOUVENIR</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* =========================
+           BACKGROUND FOTO
+        ========================= */
+
+        .hero {
+            width: 100%;
+            height: 100vh;
+
+            background-image:
+                linear-gradient(
+                    rgba(3, 12, 28, 0.70),
+                    rgba(3, 12, 28, 0.82)
+                ),
+                url("bgawal.jpeg");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            position: relative;
+        }
+
+        /* =========================
+           EFEK CAHAYA
+        ========================= */
+
+        .hero::before {
+            content: "";
+            position: absolute;
+
+            width: 500px;
+            height: 500px;
+
+            background: rgba(212, 167, 74, 0.13);
+
+            border-radius: 50%;
+
+            filter: blur(100px);
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+        }
+
+        /* =========================
+           GARIS DEKORASI
+        ========================= */
+
+        .line {
+            position: absolute;
+
+            width: 180px;
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #c9a24d,
+                transparent
+            );
+
+            top: 42%;
+            left: 50%;
+
+            transform: translateX(-50%);
+        }
+
+        /* =========================
+           CONTENT
+        ========================= */
+
+        .content {
+            position: relative;
+
+            text-align: center;
+
+            z-index: 5;
+
+            width: 90%;
+            max-width: 850px;
+
+            animation: muncul 1.5s ease;
+        }
+
+        .small-title {
+            color: #c9a24d;
+
+            font-size: 13px;
+
+            letter-spacing: 7px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 20px;
+
+            font-weight: 600;
+        }
+
+        h1 {
+            color: white;
+
+            font-family: 'Playfair Display', serif;
+
+            font-size: clamp(45px, 7vw, 95px);
+
+            line-height: 1.05;
+
+            font-weight: 600;
+
+            letter-spacing: 3px;
+
+            text-shadow:
+                0 0 20px rgba(255,255,255,0.08),
+                0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        h1 span {
+            color: #d4ae5a;
+        }
+
+        .description {
+            color: rgba(255,255,255,0.72);
+
+            font-size: 14px;
+
+            line-height: 1.8;
+
+            max-width: 550px;
+
+            margin: 25px auto 40px;
+
+            font-weight: 300;
+
+            letter-spacing: 1px;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .btn {
+            position: relative;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 220px;
+
+            padding: 17px 35px;
+
+            color: #071426;
+
+            background: linear-gradient(
+                135deg,
+                #f0d184,
+                #b98a32
+            );
+
+            border: 1px solid rgba(255,255,255,0.25);
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            transition: 0.4s;
+
+            box-shadow:
+                0 10px 40px rgba(201,162,77,0.25);
+
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 100%;
+            height: 100%;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.45),
+                transparent
+            );
+
+            transition: 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 15px 50px rgba(201,162,77,0.45);
+
+            background: linear-gradient(
+                135deg,
+                #ffe7a1,
+                #d4a947
+            );
+        }
+
+        /* =========================
+           ORNAMEN SAMPING
+        ========================= */
+
+        .corner {
+            position: absolute;
+
+            width: 70px;
+            height: 70px;
+
+            border-color: rgba(212,174,90,0.6);
+
+            z-index: 3;
+        }
+
+        .corner.top-left {
+            top: 35px;
+            left: 35px;
+
+            border-top: 1px solid;
+            border-left: 1px solid;
+        }
+
+        .corner.top-right {
+            top: 35px;
+            right: 35px;
+
+            border-top: 1px solid;
+            border-right: 1px solid;
+        }
+
+        .corner.bottom-left {
+            bottom: 35px;
+            left: 35px;
+
+            border-bottom: 1px solid;
+            border-left: 1px solid;
+        }
+
+        .corner.bottom-right {
+            bottom: 35px;
+            right: 35px;
+
+            border-bottom: 1px solid;
+            border-right: 1px solid;
+        }
+
+        /* =========================
+           NOMOR / DECORATION
+        ========================= */
+
+        .number {
+            position: absolute;
+
+            right: 45px;
+            bottom: 45px;
+
+            color: rgba(255,255,255,0.3);
+
+            font-size: 10px;
+
+            letter-spacing: 4px;
+        }
+
+        /* =========================
+           ANIMATION
+        ========================= */
+
+        @keyframes muncul {
+
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .small-title {
+                font-size: 10px;
+                letter-spacing: 4px;
+            }
+
+            h1 {
+                font-size: 48px;
+            }
+
+            .description {
+                font-size: 12px;
+                padding: 0 15px;
+            }
+
+            .btn {
+                min-width: 190px;
+                padding: 15px 25px;
+            }
+
+            .corner {
+                width: 40px;
+                height: 40px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <section class="hero">
+
+        <!-- Ornamen -->
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <div class="line"></div>
+
+        <!-- Konten Tengah -->
+        <div class="content">
+
+            <div class="small-title">
+                Digital Archive
+            </div>
+
+            <h1>
+                ARSIP <span>SOUVENIR</span>
+            </h1>
+
+            <p class="description">
+                 Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C
+            </p>
+
+            <a href="tengah.html" class="btn">
+                Masuk Arsip
+            </a>
+
+        </div>
+
+        <div class="number">
+            01 / 2026
+        </div>
+
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,1686 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Pokok Pendidikan</title>
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+    /* =========================
+   ANIMASI TAMBAHAN
+========================= */
+
+/* HEADER MUNCUL */
+.header {
+    animation: headerMasuk 0.8s ease-out;
+}
+
+@keyframes headerMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* RUNNING TEXT */
+.running-container {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* CARD MUNCUL SATU-SATU */
+.menu-card {
+    opacity: 0;
+    animation: cardMasuk 0.7s ease forwards;
+}
+
+/* delay setiap card */
+.menu-card:nth-child(1)  { animation-delay: 0.1s; }
+.menu-card:nth-child(2)  { animation-delay: 0.2s; }
+.menu-card:nth-child(3)  { animation-delay: 0.3s; }
+.menu-card:nth-child(4)  { animation-delay: 0.4s; }
+.menu-card:nth-child(5)  { animation-delay: 0.5s; }
+.menu-card:nth-child(6)  { animation-delay: 0.6s; }
+.menu-card:nth-child(7)  { animation-delay: 0.7s; }
+.menu-card:nth-child(8)  { animation-delay: 0.8s; }
+.menu-card:nth-child(9)  { animation-delay: 0.9s; }
+.menu-card:nth-child(10) { animation-delay: 1s; }
+.menu-card:nth-child(11) { animation-delay: 1.1s; }
+.menu-card:nth-child(12) { animation-delay: 1.2s; }
+.menu-card:nth-child(13) { animation-delay: 1.3s; }
+.menu-card:nth-child(14) { animation-delay: 1.4s; }
+.menu-card:nth-child(15) { animation-delay: 1.5s; }
+.menu-card:nth-child(16) { animation-delay: 1.6s; }
+.menu-card:nth-child(17) { animation-delay: 1.7s; }
+.menu-card:nth-child(18) { animation-delay: 1.8s; }
+.menu-card:nth-child(19) { animation-delay: 1.9s; }
+.menu-card:nth-child(20) { animation-delay: 2s; }
+.menu-card:nth-child(21) { animation-delay: 2.1s; }
+.menu-card:nth-child(22) { animation-delay: 2.2s; }
+
+@keyframes cardMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* EFEK HOVER CARD */
+.menu-card:hover {
+    transform: translateY(-10px) scale(1.02);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.25);
+}
+
+
+/* CAHAYA BERGERAK */
+.menu-card {
+    isolation: isolate;
+}
+
+.menu-card .shine {
+    position: absolute;
+
+    width: 70px;
+    height: 250px;
+
+    background: rgba(255,255,255,0.13);
+
+    transform: rotate(25deg);
+
+    left: -120px;
+    top: -50px;
+
+    transition: 0.7s;
+
+    z-index: 1;
+}
+
+.menu-card:hover .shine {
+    left: 120%;
+}
+
+
+/* ICON BERGERAK */
+.menu-card .icon {
+    transition: transform 0.4s ease;
+}
+
+.menu-card:hover .icon {
+    transform: scale(1.12) rotate(5deg);
+}
+
+
+/* ANGKA */
+.angka {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+
+    text-shadow:
+        0 2px 5px rgba(0,0,0,0.3);
+
+    transition: 0.3s;
+}
+
+.menu-card:hover .angka {
+    transform: scale(1.2);
+}
+
+
+/* DEKORASI BERGERAK */
+.menu-card::before {
+    animation: lingkaranAtas 6s ease-in-out infinite alternate;
+}
+
+.menu-card::after {
+    animation: lingkaranBawah 5s ease-in-out infinite alternate;
+}
+
+@keyframes lingkaranAtas {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(-15px, 15px);
+    }
+}
+
+@keyframes lingkaranBawah {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(15px, -10px);
+    }
+}
+
+
+/* TOTAL SOUVENIR */
+.total-box {
+    animation: totalMasuk 1s ease;
+}
+
+@keyframes totalMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* ANGKA TOTAL BERDENYUT */
+.total-number {
+    animation: angkaGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes angkaGlow {
+    from {
+        transform: scale(1);
+        text-shadow: 0 0 0 rgba(255,217,90,0);
+    }
+
+    to {
+        transform: scale(1.06);
+        text-shadow:
+            0 0 12px rgba(255,217,90,0.7);
+    }
+}
+
+
+/* TOTAL BOX LIGHT */
+.total-box::after {
+    content: "";
+
+    position: absolute;
+
+    width: 80px;
+    height: 250px;
+
+    background: rgba(255,255,255,0.08);
+
+    transform: rotate(25deg);
+
+    left: -150px;
+    top: -50px;
+
+    animation: totalLight 5s linear infinite;
+}
+
+@keyframes totalLight {
+    0% {
+        left: -150px;
+    }
+
+    100% {
+        left: 120%;
+    }
+}
+
+
+/* FOOTER */
+footer {
+    animation: footerMasuk 1s ease;
+}
+
+@keyframes footerMasuk {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background-image:
+        linear-gradient(
+            rgba( 0, 35, 65, 0.40),
+            rgba( 0, 35, 65, 0.405)
+        ),
+        url("bgawal.jpeg");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    color: #333;
+}
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            width: 100%;
+            min-height: 58px;
+
+            background: #0876b9;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 45px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+
+            padding: 21px 15px;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .navbar a.active {
+            background: #06649c;
+        }
+
+        .navbar i {
+            margin-left: 5px;
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            min-height: 155px;
+
+            background: white;
+
+            display: flex;
+            align-items: center;
+
+            padding: 25px 70px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+        .logo-box {
+            width: 105px;
+            height: 105px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-right: 25px;
+        }
+
+        .logo-box img {
+            max-width: 100%;
+            max-height: 100%;
+
+            object-fit: contain;
+        }
+
+        .header-text h1 {
+            color: #0876b9;
+
+            font-size: 27px;
+
+            margin-bottom: 8px;
+        }
+
+        .header-text h3 {
+            color: #555;
+
+            font-size: 17px;
+
+            margin-bottom: 7px;
+        }
+
+        .header-text p {
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           RUNNING TEXT
+        ========================= */
+
+        .running-container {
+            width: 100%;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+
+            background: white;
+
+            border-bottom: 1px solid #ddd;
+
+            overflow: hidden;
+        }
+
+        .running-icon {
+            width: 60px;
+            height: 48px;
+
+            flex-shrink: 0;
+
+            background: #0876b9;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            font-size: 17px;
+        }
+
+        .running-text {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .running-text span {
+            display: inline-block;
+
+            padding-left: 100%;
+
+            animation: runningText 18s linear infinite;
+
+            color: #555;
+
+            font-size: 14px;
+        }
+
+        @keyframes runningText {
+
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+
+        }
+
+
+        /* =========================
+           MENU
+        ========================= */
+
+        .menu-container {
+
+            max-width: 1150px;
+
+            margin: 45px auto;
+
+            padding: 0 25px;
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 25px;
+        }
+
+
+        /* =========================
+           MENU CARD
+        ========================= */
+
+        .menu-card {
+
+            position: relative;
+
+            min-height: 175px;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            color: white;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 5px 15px rgba(0,0,0,0.12);
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .menu-card:hover {
+
+            transform: translateY(-8px);
+
+            box-shadow:
+                0 12px 25px rgba(0,0,0,0.2);
+        }
+
+
+        /* DEKORASI */
+
+        .menu-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 150px;
+            height: 150px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.08);
+
+            top: -70px;
+            right: -60px;
+        }
+
+        .menu-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 100px;
+            height: 100px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.06);
+
+            bottom: -50px;
+            left: -40px;
+        }
+
+
+        /* =========================
+           ICON
+        ========================= */
+
+        .menu-card .icon {
+
+            width: 65px;
+            height: 65px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255,255,255,0.18);
+
+            margin-bottom: 15px;
+
+            font-size: 28px;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        /* =========================
+           TITLE
+        ========================= */
+
+        .menu-title {
+
+            position: relative;
+
+            z-index: 2;
+
+            font-size: 17px;
+
+            line-height: 1.5;
+
+            font-weight: bold;
+        }
+
+
+       /* =========================
+   WARNA CARD - 22 MENU
+========================= */
+
+/* MENU 1 */
+.green {
+    background: linear-gradient(135deg, #159957, #0f7d47);
+}
+
+/* MENU 2 */
+.orange {
+    background: linear-gradient(135deg, #f39c12, #c96b00);
+}
+
+/* MENU 3 */
+.blue {
+    background: linear-gradient(135deg, #2980b9, #15527a);
+}
+
+/* MENU 4 */
+.teal {
+    background: linear-gradient(135deg, #16a085, #08785f);
+}
+
+/* MENU 5 */
+.red {
+    background: linear-gradient(135deg, #e74c3c, #a9251d);
+}
+
+/* MENU 6 */
+.purple {
+    background: linear-gradient(135deg, #8e44ad, #5b2470);
+}
+
+/* MENU 7 */
+.gold {
+    background: linear-gradient(135deg, #c9a227, #8f6d12);
+}
+
+/* MENU 8 */
+.navy {
+    background: linear-gradient(135deg, #123c63, #071f36);
+}
+
+/* MENU 9 */
+.sky {
+    background: linear-gradient(135deg, #3498db, #17699c);
+}
+
+/* MENU 10 */
+.darkgold {
+    background: linear-gradient(135deg, #b8860b, #765400);
+}
+
+/* MENU 11 */
+.cyan {
+    background: linear-gradient(135deg, #008caa, #00566b);
+}
+
+/* MENU 12 */
+.maroon {
+    background: linear-gradient(135deg, #8e3030, #541919);
+}
+
+/* MENU 13 */
+.indigo {
+    background: linear-gradient(135deg, #3949ab, #202b72);
+}
+
+/* MENU 14 */
+.yellow {
+    background: linear-gradient(135deg, #d4ac0d, #947600);
+}
+
+/* MENU 15 */
+.ocean {
+    background: linear-gradient(135deg, #006994, #003f5c);
+}
+
+/* MENU 16 */
+.greenblue {
+    background: linear-gradient(135deg, #087f8c, #04545c);
+}
+
+/* MENU 17 */
+.goldblue {
+    background: linear-gradient(135deg, #9f7d18, #234e70);
+}
+
+/* MENU 18 */
+.deepblue {
+    background: linear-gradient(135deg, #145da0, #082f49);
+}
+
+/* MENU 19 */
+.bronze {
+    background: linear-gradient(135deg, #a97142, #654321);
+}
+
+/* MENU 20 */
+.steel {
+    background: linear-gradient(135deg, #477c9e, #294d63);
+}
+
+/* MENU 21 */
+.goldgreen {
+    background: linear-gradient(135deg, #8a9a28, #4e5a13);
+}
+
+/* MENU 22 */
+.royal {
+    background: linear-gradient(135deg, #283593, #141b50);
+}
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+
+            width: 100%;
+
+            background: #075b8c;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 22px;
+
+            margin-top: 50px;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           TABLET
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .navbar {
+                padding: 0 15px;
+            }
+
+            .nav-left {
+                overflow-x: auto;
+            }
+
+            .navbar a {
+                white-space: nowrap;
+
+                padding: 20px 10px;
+
+                font-size: 12px;
+            }
+
+            .header {
+                padding: 25px 35px;
+            }
+
+            .header-text h1 {
+                font-size: 22px;
+            }
+
+            .menu-container {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+        }
+
+
+        /* =========================
+           HP
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .navbar {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                padding: 0;
+            }
+
+            .nav-left {
+
+                width: 100%;
+
+                overflow-x: auto;
+            }
+
+            .login {
+
+                width: 100%;
+
+                justify-content: flex-end;
+            }
+
+            .navbar a {
+
+                padding: 15px 10px;
+
+                font-size: 11px;
+            }
+
+
+            .header {
+
+                flex-direction: column;
+
+                text-align: center;
+
+                padding: 30px 20px;
+            }
+
+            .logo-box {
+
+                margin-right: 0;
+
+                margin-bottom: 15px;
+            }
+
+            .header-text h1 {
+
+                font-size: 20px;
+            }
+
+            .header-text h3 {
+
+                font-size: 14px;
+            }
+
+            .header-text p {
+
+                font-size: 12px;
+            }
+
+
+            .menu-container {
+
+                grid-template-columns: 1fr;
+
+                padding: 0 20px;
+
+                margin-top: 30px;
+            }
+
+            .menu-card {
+
+                min-height: 150px;
+            }
+
+        }
+ 
+/* =========================
+   TOTAL SOUVENIR
+========================= */
+
+.total-souvenir {
+    max-width: 1150px;
+    margin: 10px auto 45px;
+    padding: 0 25px;
+}
+
+.total-box {
+    background: linear-gradient(135deg, #082f49, #b8860b);
+    border-radius: 15px;
+    padding: 25px 35px;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.total-box::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    right: -50px;
+    top: -80px;
+}
+
+.total-info {
+    position: relative;
+    z-index: 2;
+}
+
+.total-info h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.total-info p {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.total-number {
+    position: relative;
+    z-index: 2;
+    font-size: 42px;
+    font-weight: bold;
+    color: #ffd95a;
+}
+
+/* HP */
+@media (max-width: 600px) {
+    .total-box {
+        padding: 22px;
+    }
+
+    .total-number {
+        font-size: 32px;
+    }
+}
+
+.menu-image {
+    width: 45px;
+    height: 40px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 9px;
+    border-radius: 8px;
+}
+
+.menu-card:hover .menu-image {
+    transform: scale(3.3);
+    transition: 0.3s ease;
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-left">
+
+            <!-- KEMBALI KE INDEX -->
+
+            <a href="index.html" class="active">
+               Arsip sovenir
+            </a>
+        
+        </div>
+
+
+        <div class="login">
+
+            <a href="#">
+                <i class="fa-solid fa-caret-down"></i>
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <div class="logo-box">
+
+            <img src="logo.jpeg"
+                 alt="Logo">
+
+        </div>
+
+
+        <div class="header-text">
+
+            <h1>
+                Arsip Sovenir
+            </h1>
+
+            <h3>
+                Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Pangkalpinang
+            </h3>
+
+            <p>
+
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         RUNNING TEXT
+    ========================= -->
+
+    <div class="running-container">
+
+        <div class="running-icon">
+
+            <i class="fa-solid fa-bullhorn"></i>
+
+        </div>
+
+
+        <div class="running-text">
+
+            <span>
+
+                Dengan Semangat baru dan Kebersamaan Kita Bersama dalam  Apreasi
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         MENU
+    ========================= -->
+
+    <main class="menu-container">
+
+
+        <!-- MENU 1 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2>   <span class="angka">10</span> </h2> 
+
+            </div>
+
+            <div class="menu-title">
+ <img src="WhatsApp_Image_2026-10-08_at_08.26.33-removebg-preview.png"
+            
+             alt="Topi"
+             class="menu-image">
+              <h2>  Topi </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 2 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+                <h1> <span class="angka">3</span>  </h1> 
+
+            </div>
+
+            <div class="menu-title">
+<img src="ChatGPT Image 8 Okt 2026, 13.20.35.png"
+            
+             alt="Topi"
+             class="menu-image">
+              <h2>  Tas Gempur </h2>
+                <br>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 3 -->
+ 
+        <a href="#" class="menu-card  orange">
+<div class="shine"></div>
+            <div class="">
+
+              <h2> <span class="angka">24</span>  </h2> 
+
+            </div>
+
+            <div class="menu-title">
+<img src="flyerimei.png"
+            
+             alt="flayer"
+             class="menu-image">
+              <h2>  Flayer Imei </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 4 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+              <h2>  <span class="angka">25</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="pnumpang.png"
+            
+             alt="flayer"
+             class="menu-image">
+             <h2>   Flayer Penumpang  </h2>
+                <br>
+               
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 5 -->
+
+        <a href="#" class="menu-card  orange">
+ <div class="shine"></div>
+            <div class="">
+
+                <h2>  <span class="angka">21</span>  </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="keperluan.png"
+            
+             alt="flayer"
+             class="menu-image">
+              <h2>  Flayer Keperluan Ibadah  </h2>
+                <br>
+               
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 6 -->
+ 
+        <a href="#" class="menu-card orange">
+<div class="shine"></div>
+            <div class="">
+
+               <h2>  <span class="angka">29</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="pertahanan.png"
+            
+             alt="flayer"
+             class="menu-image">
+               <h3> Flayer Prtahanan & Keamanan Negara </h3>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+
+        <!-- MENU 7 -->
+
+        <a href="#" class="menu-card  orange">
+ <div class="shine"></div>
+            <div class="">
+
+             <h2>  <span class="angka">4</span>  </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="notebook.png"
+            
+             alt="notebook"
+             class="menu-image">
+             <h2>   Notebook </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+        <!-- MENU 8 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+             <h2>  <span class="angka">4</span>  </h2>
+
+            </div>
+
+            <div class="menu-title">
+
+                <img src="glelas.png"
+            
+             alt="gelas"
+             class="menu-image">
+  <h2> Gelas  </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+        <!-- MENU 9 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+                 <h2> <span class="angka">1</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="pita cukai.jpeg"
+            
+             alt="notebook pita cukai"
+             class="menu-image">
+                  <h2> Notebook Pita Cukai </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+
+        <!-- MENU 10 -->
+ 
+        <a href="#" class="menu-card orange">
+<div class="shine"></div>
+            <div class="">
+
+               <h2> <span class="angka">59</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="totebag.png"
+            
+             alt="totebag"
+             class="menu-image">
+             <h2>  Totebag biru  </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 11 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+                <h2> <span class="angka">7</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="payung.png"
+            
+             alt="notebook"
+             class="menu-image">
+               <h2>  Payung  </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 12 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2> <span class="angka">3</span>  </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="masker.png"
+            
+             alt="masker"
+             class="menu-image">
+            <h2> Masker </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 13 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+        <h2>    <span class="angka">1</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="baju.png"
+            
+             alt="baju"
+             class="menu-image">
+            <h2>  Baju Kaos Hitam </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 14 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+              <h2>  <span class="angka">3</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+                <img src="pin.png"
+            
+             alt="pin"
+             class="menu-image">
+    <h2> Pin </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 15 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+            <h2>  <span class="angka">1</span>  </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="jam.png"
+            
+             alt="jam"
+             class="menu-image">
+              <h2> Jam </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 16 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+             <h2>  <span class="angka">9</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="modul.png"
+            
+             alt="modul"
+             class="menu-image">
+               <h2> Buku/Modul</h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 17 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+             <h2> <span class="angka">50</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="leaflet4.png"
+            
+             alt="leaflet1"
+             class="menu-image">
+               <h2> Leaflet PCHT-oplah </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 18 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2> <span class="angka">25</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="leaflet2.png"
+            
+             alt="leaflet2"
+             class="menu-image">
+            <h3>   Leaflet PCHPTL-PCREL oplah </h3>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 19 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+              </h2>  <span class="angka">50</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="leaflet4.png"
+            
+             alt="leaflet1"
+             class="menu-image">
+               <h2> Leaflet PCMMEA-oplah </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 20 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2> <span class="angka">49</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="leaflet3.png"
+            
+             alt="leaflet3"
+             class="menu-image">
+              <h3> Leaflet PCHPTL & PCREL </h3>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+         <!-- MENU 21 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2>  <span class="angka">1</span> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="kartunama.png"
+            
+             alt="kartunama"
+             class="menu-image">
+             <h2>  Kartu Nama  </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+ <!-- MENU 22 -->
+
+        <a href="#" class="menu-card orange">
+ <div class="shine"></div>
+            <div class="">
+
+               <h2> <i class="angka">5</i> </h2>
+
+            </div>
+
+            <div class="menu-title">
+<img src="penghargaan.png"
+            
+             alt="Penghargaan"
+             class="menu-image">
+              <h2> Piala Penghargaan </h2>
+                <br>
+                
+
+            </div>
+
+        </a>
+
+    </main>
+
+    <!-- TOTAL SOUVENIR -->
+
+<section class="total-souvenir">
+
+    <div class="total-box">
+
+        <div class="total-info">
+            <h2>Total Souvenir</h2>
+            <p>Jumlah seluruh stok souvenir yang tersedia</p>
+        </div>
+
+        <div class="total-number" id="totalSouvenir">
+            0
+        </div>
+
+    </div>
+
+</section>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer>
+
+        <p>
+            © 2026 Data Pokok Pendidikan
+        </p>
+
+    </footer>
+
+<script>
+
+let total = 0;
+
+/* HITUNG SEMUA STOK */
+document.querySelectorAll(".angka").forEach(function(item) {
+
+    let angka = parseInt(item.textContent) || 0;
+
+    total += angka;
+
+});
+
+
+/* ANIMASI ANGKA TOTAL */
+let current = 0;
+
+let duration = 1800;
+
+let start = performance.now();
+
+
+function animateTotal(time) {
+
+    let progress = Math.min(
+        (time - start) / duration,
+        1
+    );
+
+    /* efek easing */
+    let easing =
+        1 - Math.pow(1 - progress, 3);
+
+    current =
+        Math.floor(total * easing);
+
+    document.getElementById("totalSouvenir")
+        .textContent =
+        current.toLocaleString("id-ID");
+
+
+    if (progress < 1) {
+
+        requestAnimationFrame(animateTotal);
+
+    } else {
+
+        document.getElementById("totalSouvenir")
+            .textContent =
+            total.toLocaleString("id-ID");
+
+    }
+
+}
+
+
+requestAnimationFrame(animateTotal);
+
+</script>
+
+</body>
+
+</html>
